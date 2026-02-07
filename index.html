@@ -15,32 +15,33 @@
   --red:#ff4d4d;
   --orange:#ff9900;
   --bg-dark:#0b0b1a;
-  --text-dark:#00ffff;
-  --card-dark:#1c1c2c;
+  --card-dark:#1a1a2e;
+  --text-light:#eee;
 }
 
 body{
   margin:0;
   font-family:Arial, Helvetica, sans-serif;
   text-align:center;
-  background:#0b0b1a url('logo.png') no-repeat center top;
+  background:var(--bg-dark) url('logo.png') no-repeat center top;
   background-size:150px 150px;
-  color:var(--text-dark);
+  color:var(--text-light);
   overflow-x:hidden;
 }
 
 .wrapper{
-  padding:20px;
+  padding:200px 20px 20px 20px; /* space for logo */
   max-width:1100px;
   margin:auto;
+  position:relative;
+  z-index:1;
 }
 
 h1{
   font-size:2.7rem;
   margin-bottom:5px;
   animation:pulse 1.5s infinite alternate;
-  color:var(--primary);
-  text-shadow:0 0 8px var(--primary),0 0 15px var(--primary);
+  text-shadow:0 0 10px #0ff, 0 0 20px #0ff, 0 0 30px #0ff;
 }
 
 @keyframes pulse{
@@ -52,6 +53,7 @@ h1{
 .tagline{
   opacity:.7;
   margin-bottom:20px;
+  text-shadow:0 0 5px #0ff;
 }
 
 .card{
@@ -59,7 +61,7 @@ h1{
   border-radius:16px;
   padding:18px;
   margin:12px;
-  box-shadow:0 10px 25px rgba(0,255,255,0.1);
+  box-shadow:0 0 20px #00ffff88;
   transition: all 0.3s ease;
 }
 
@@ -72,7 +74,7 @@ h1{
 .stat{
   font-weight:bold;
   margin:6px 0;
-  color:var(--primary);
+  font-size:1.2rem;
 }
 
 .wallet-btn{
@@ -86,21 +88,22 @@ h1{
   transition:.2s;
 }
 
-.wallet-btn:hover{ transform:scale(1.06); }
+.wallet-btn:hover{ transform:scale(1.08); }
 
 .buy{ background:var(--green); }
-.sell{ background:#888; }
+.disconnect{ background:var(--red); }
+
 .address{
-  font-size:.9rem;
-  opacity:.85;
-  word-break:break-all;
+  font-size:1rem;
+  font-weight:bold;
   color:#0ff;
+  text-shadow:0 0 5px #0ff,0 0 10px #0ff;
+  word-break:break-all;
 }
 
 .small{
   font-size:.85rem;
   opacity:.7;
-  color:#0ff;
 }
 
 .loader{
@@ -118,25 +121,42 @@ h1{
   100%{transform:rotate(360deg);}
 }
 
-.price-box{
-  font-size:1.4rem;
-  padding:12px;
-  border-radius:12px;
+.balance-glow{
   color:#0ff;
-  text-shadow:0 0 8px #0ff,0 0 15px #0ff;
-  transition:0.4s;
+  font-size:1.3rem;
+  font-weight:bold;
+  text-shadow:0 0 10px #0ff,0 0 20px #0ff,0 0 30px #0ff;
+  animation: glowPulse 2s infinite alternate;
 }
 
-.footer{
+@keyframes glowPulse{
+  0%{text-shadow:0 0 10px #0ff,0 0 20px #0ff;}
+  50%{text-shadow:0 0 15px #0ff,0 0 30px #0ff;}
+  100%{text-shadow:0 0 10px #0ff,0 0 20px #0ff;}
+}
+
+footer{
   margin-top:30px;
   padding:20px;
   font-size:.9rem;
   opacity:.7;
-  color:#0ff;
+  text-shadow:0 0 5px #0ff;
+}
+
+/* background particles */
+#stars{
+  position:fixed;
+  top:0; left:0;
+  width:100%;
+  height:100%;
+  pointer-events:none;
+  z-index:0;
 }
 </style>
 </head>
 <body>
+
+<canvas id="stars"></canvas>
 
 <div class="wrapper">
 
@@ -144,39 +164,29 @@ h1{
 <div class="tagline">We are Bro's. We are BRONIN!</div>
 
 <div class="flex">
-
-  <div class="card price-box" id="priceBox">
+  <div class="card" style="min-width:250px;">
     <div class="stat">Price</div>
-    $<span id="price">Loading...</span>
+    $<span id="price" class="balance-glow">0</span>
   </div>
 
-  <div class="card">
+  <div class="card" style="min-width:250px;">
     <div class="stat">FDV</div>
-    $<span id="marketcap">Loading...</span>
+    $<span id="marketcap" class="balance-glow">0</span>
   </div>
 
-  <div class="card">
+  <div class="card" style="min-width:250px;">
     <div class="stat">BRO-lders</div>
-    <span id="holders">Loading...</span>
+    <span id="holders" class="balance-glow">0</span>
   </div>
-
 </div>
 
 <div class="card">
-  <button class="wallet-btn buy" id="buyBtn" target="_blank">
-    Buy on Pump.Fun
-  </button>
+  <button class="wallet-btn buy" id="buyBtn">Buy on Pump.Fun</button>
 </div>
 
 <div class="card">
-
-  <button id="connectBtn" class="wallet-btn" onclick="connectWallet()">
-    Connect Phantom
-  </button>
-
-  <button id="disconnectBtn" class="wallet-btn" onclick="disconnectWallet()" style="display:none;background:var(--red);">
-    Disconnect
-  </button>
+  <button id="connectBtn" class="wallet-btn" onclick="connectWallet()">Connect Phantom</button>
+  <button id="disconnectBtn" class="wallet-btn disconnect" onclick="disconnectWallet()" style="display:none;">Disconnect</button>
 
   <div id="spinner" style="display:none;">
     <div class="loader"></div>
@@ -184,79 +194,70 @@ h1{
 
   <div id="walletInfo" style="display:none;margin-top:10px;">
     <div class="small">Connected</div>
-    <div id="walletAddress"></div>
+    <div id="walletAddress" class="address"></div>
     <hr>
-    <div>SOL: <strong id="solBalance">0</strong></div>
-    <div>BRN: <strong id="tokenBalance">0</strong></div>
-    <div>Value: $<strong id="usdValue">0</strong></div>
+    <div>SOL: <strong id="solBalance" class="balance-glow">0</strong></div>
+    <div>BRN: <strong id="tokenBalance" class="balance-glow">0</strong></div>
+    <div>Value: $<strong id="usdValue" class="balance-glow">0</strong></div>
   </div>
-
 </div>
 
-<footer class="footer">
+<footer>
 © 2026 Bronin Token • Buy Responsibly 😎
 </footer>
 
-</div>
-
 <!-- Phantom modal -->
-<div id="phantomModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.7);justify-content:center;align-items:center;">
-  <div style="background:#111;padding:25px;border-radius:15px;max-width:380px;">
-    <h3 style="color:#0ff;">Phantom required</h3>
-    <p style="color:#0ff;">Install Phantom wallet to continue.</p>
+<div id="phantomModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.8);justify-content:center;align-items:center;">
+  <div style="background:#111;padding:25px;border-radius:15px;max-width:380px;color:#0ff;">
+    <h3>Phantom required</h3>
+    <p>Install Phantom wallet to continue.</p>
     <button class="wallet-btn" onclick="installPhantom()">Install</button>
   </div>
 </div>
 
 <script>
-const TOKEN_MINT = "J4Db1dSx5qkhghjbzNXarMyQ2KirijJGGFb9h9jzpump";
-const PAIR_ADDRESS = "45sspkuqs1ssbedqxd2mzrmdjyaxf7gyqyhs5xdxuwc5";
+// ============ CONFIG ===========
+const TOKEN_MINT = "YOUR_BRONIN_SOLANA_TOKEN_ADDRESS"; 
+const PUMP_FUN = "https://pump.fun/coin/J4Db1dSx5qkhghjbzNXarMyQ2KirijJGGFb9h9jzpump"; 
+let lastPrice = 0;
+let lastHolders = 0;
+let lastFDV = 0;
 
-const connection = new solanaWeb3.Connection(
-  solanaWeb3.clusterApiUrl("mainnet-beta"),
-  "confirmed"
-);
+// Buy button
+document.getElementById("buyBtn").onclick = () => window.open(PUMP_FUN, "_blank");
 
+// ============ SOLANA CONNECTION ===========
+const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl("mainnet-beta"), "confirmed");
 let provider;
 let publicKey;
-let lastPrice = 0;
-let inactivityTimer;
+let disconnectTimeout;
 
-// Update price neon pulse
-function pulsePrice(){
-  const box = document.getElementById("priceBox");
-  box.style.textShadow = "0 0 12px #0ff,0 0 25px #0ff,0 0 40px #0ff";
-  setTimeout(()=>{box.style.textShadow="0 0 8px #0ff,0 0 15px #0ff";},500);
-}
+// shorten
+function shortenAddress(a){ return a.slice(0,4)+"..."+a.slice(-4); }
 
-// Shorten wallet address
-function shortenAddress(a){
-  return a.slice(0,4) + "..." + a.slice(-4);
+// Auto disconnect after 2 mins idle
+function resetDisconnectTimer(){
+  if(disconnectTimeout) clearTimeout(disconnectTimeout);
+  disconnectTimeout = setTimeout(()=>{ disconnectWallet(); },120000);
 }
 
 // Connect Wallet
 async function connectWallet(){
-  if(!(window.solana && window.solana.isPhantom)){
-    showInstallPopup();
-    return;
-  }
-
+  if(!(window.solana && window.solana.isPhantom)){ showInstallPopup(); return; }
   provider = window.solana;
-  document.getElementById("spinner").style.display = "block";
-
+  document.getElementById("spinner").style.display="block";
   try{
     const resp = await provider.connect();
     publicKey = resp.publicKey;
     updateUIConnected();
     confetti({particleCount:120,spread:80,origin:{y:0.6}});
     getBalances();
-    resetInactivityTimer();
+    resetDisconnectTimer();
   }catch(e){}
-
-  document.getElementById("spinner").style.display = "none";
+  document.getElementById("spinner").style.display="none";
 }
 
-// Update UI on connect
+// Update UI
 function updateUIConnected(){
   connectBtn.style.display="none";
   disconnectBtn.style.display="inline-block";
@@ -271,93 +272,86 @@ async function disconnectWallet(){
   connectBtn.style.display="inline-block";
   disconnectBtn.style.display="none";
   walletInfo.style.display="none";
-  clearTimeout(inactivityTimer);
 }
 
-// Auto connect
+// Auto reconnect if trusted
 async function autoConnect(){
   if(window.solana && window.solana.isPhantom){
     provider = window.solana;
     try{
       const r = await provider.connect({onlyIfTrusted:true});
-      if(r.publicKey){
-        publicKey=r.publicKey;
-        updateUIConnected();
-        getBalances();
-        resetInactivityTimer();
-      }
+      if(r.publicKey){ publicKey=r.publicKey; updateUIConnected(); getBalances(); resetDisconnectTimer(); }
     }catch{}
-    // Listen for external disconnect
-    window.solana.on("disconnect", () => {
-      disconnectWallet();
-      console.log("Wallet disconnected externally.");
-    });
   }
 }
 window.addEventListener("load", autoConnect);
 
-// Auto disconnect after 2 min of inactivity
-function resetInactivityTimer(){
-  clearTimeout(inactivityTimer);
-  inactivityTimer = setTimeout(() => {
-    disconnectWallet();
-    console.log("Wallet auto disconnected due to inactivity.");
-  }, 2*60*1000);
-}
-
 // Get balances
 async function getBalances(){
   if(!publicKey) return;
-
   const balance = await connection.getBalance(publicKey);
-  solBalance.innerText = (balance / solanaWeb3.LAMPORTS_PER_SOL).toFixed(4);
+  solBalance.innerText=(balance/solanaWeb3.LAMPORTS_PER_SOL).toFixed(4);
 
-  const tokenAccounts = await connection.getParsedTokenAccountsByOwner(
-    publicKey,
-    { mint: new solanaWeb3.PublicKey(TOKEN_MINT) }
-  );
-
-  let tokenAmount = 0;
-  if(tokenAccounts.value.length > 0){
-    tokenAmount = tokenAccounts.value[0].account.data.parsed.info.tokenAmount.uiAmount;
-  }
-
-  tokenBalance.innerText = tokenAmount ?? 0;
-  usdValue.innerText = ((tokenAmount||0) * lastPrice).toFixed(2);
+  const tokenAccounts = await connection.getParsedTokenAccountsByOwner(publicKey,{mint:new solanaWeb3.PublicKey(TOKEN_MINT)});
+  let tokenAmount=0;
+  if(tokenAccounts.value.length>0) tokenAmount=tokenAccounts.value[0].account.data.parsed.info.tokenAmount.uiAmount;
+  tokenBalance.innerText=tokenAmount??0;
+  usdValue.innerText=((tokenAmount||0)*lastPrice).toFixed(2);
 }
 
-// Fetch token data live
+// Fetch live token data from DexScreener
 async function fetchTokenData(){
   try{
     const res = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${TOKEN_MINT}`);
     const data = await res.json();
     const pair = data.pairs[0];
+    lastPrice=parseFloat(pair.priceUsd)||0;
+    lastFDV=parseFloat(pair.fdv)||0;
+    lastHolders=pair.holders||0;
 
-    lastPrice = parseFloat(pair.priceUsd) || 0;
-    price.innerText = lastPrice ? lastPrice.toFixed(6) : "0";
-    marketcap.innerText = pair.fdv ? parseFloat(pair.fdv).toLocaleString() : "N/A";
-    holders.innerText = pair.holders ? pair.holders.toLocaleString() : "N/A";
-
-    pulsePrice();
+    price.innerText = lastPrice.toFixed(6);
+    marketcap.innerText = lastFDV.toLocaleString();
+    holders.innerText = lastHolders.toLocaleString();
 
     if(publicKey) getBalances();
-  }catch{
-    price.innerText="N/A";
-    marketcap.innerText="N/A";
-    holders.innerText="N/A";
-  }
-}
 
+  }catch{ price.innerText="N/A"; marketcap.innerText="N/A"; holders.innerText="N/A"; }
+}
 setInterval(fetchTokenData,15000);
 fetchTokenData();
 
-// Buy button
-document.getElementById("buyBtn").onclick = () =>
-  window.open(`https://pump.fun/coin/${TOKEN_MINT}`, "_blank");
-
-// Phantom install
+// Phantom Install popup
 function showInstallPopup(){ phantomModal.style.display="flex"; }
 function installPhantom(){ window.open("https://phantom.app/","_blank"); }
+
+// Background particles effect
+const canvas=document.getElementById("stars");
+const ctx=canvas.getContext("2d");
+canvas.width=window.innerWidth;
+canvas.height=window.innerHeight;
+let stars=[];
+for(let i=0;i<150;i++){ stars.push({x:Math.random()*canvas.width, y:Math.random()*canvas.height, r:Math.random()*1.5+0.5, dx:(Math.random()-0.5)/2, dy:(Math.random()-0.5)/2}); }
+function animateStars(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  stars.forEach(s=>{
+    ctx.beginPath();
+    ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+    ctx.fillStyle="cyan";
+    ctx.fill();
+    s.x+=s.dx; s.y+=s.dy;
+    if(s.x<0)s.x=canvas.width;
+    if(s.x>canvas.width)s.x=0;
+    if(s.y<0)s.y=canvas.height;
+    if(s.y>canvas.height)s.y=0;
+  });
+  requestAnimationFrame(animateStars);
+}
+animateStars();
+
+// Detect wallet disconnect manually
+setInterval(async ()=>{
+  if(provider && provider.isConnected===false){ disconnectWallet(); }
+},3000);
 </script>
 
 </body>
