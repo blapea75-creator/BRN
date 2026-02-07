@@ -117,25 +117,11 @@ h1{
   100%{transform:rotate(360deg);}
 }
 
-/* Phantom wallet icon */
-#phantomBtn{
-  position:fixed;
-  top:20px;
-  right:20px;
-  width:48px;
-  height:48px;
-  cursor:pointer;
-  z-index:9999;
-  transition: all 0.3s ease;
-}
-
-#phantomBtn img{
-  width:100%;
-  height:100%;
-}
-
-#phantomBtn.connected img{
-  filter: drop-shadow(0 0 8px #0ff);
+footer{
+  margin-top:30px;
+  padding:20px;
+  font-size:.9rem;
+  opacity:.7;
 }
 
 /* X Logo fixed at bottom */
@@ -157,13 +143,6 @@ h1{
 #socialX:hover{
   transform:translateX(-50%) scale(1.2);
   text-shadow:0 0 15px #0ff,0 0 30px #0ff,0 0 50px #0ff;
-}
-
-footer{
-  margin-top:30px;
-  padding:20px;
-  font-size:.9rem;
-  opacity:.7;
 }
 </style>
 </head>
@@ -199,27 +178,59 @@ footer{
   </button>
 </div>
 
-<div class="card" id="walletInfoCard" style="display:none;">
-  <div>SOL: <strong id="solBalance">0</strong></div>
-  <div>BRN: <strong id="tokenBalance">0</strong></div>
-  <div>Value: $<strong id="usdValue">0</strong></div>
+<div class="card">
+
+  <button id="connectBtn" class="wallet-btn" onclick="connectWallet()">
+    Connect Phantom
+  </button>
+
+  <button id="disconnectBtn" class="wallet-btn" onclick="disconnectWallet()" style="display:none;background:#ff4d4d;">
+    Disconnect
+  </button>
+
+  <div id="spinner" style="display:none;">
+    <div class="loader"></div>
+  </div>
+
+  <div id="walletInfo" style="display:none;margin-top:10px;">
+    <div class="small">Connected</div>
+    <div id="walletAddress"></div>
+    <hr>
+    <div>SOL: <strong id="solBalance">0</strong></div>
+    <div>BRN: <strong id="tokenBalance">0</strong></div>
+    <div>Value: $<strong id="usdValue">0</strong></div>
+  </div>
+
 </div>
 
 <footer>
 © 2026 Bronin Token • Buy Responsibly 😎
 </footer>
 
-<!-- Phantom Wallet Icon -->
-<div id="phantomBtn" title="Connect Phantom Wallet">
-  <img src="https://cdn.jsdelivr.net/gh/solana-labs/oyster@main/assets/phantom.png" alt="Phantom Wallet"/>
-</div>
-
 <!-- X Logo link -->
 <a href="https://x.com/Only_BRONin" target="_blank" id="socialX">X</a>
 
-<script>
-const TOKEN_MINT = "J4Db1dSx5qkhghjbzNXarMyQ2KirijJGGFb9h9jzpump";
+<!-- Phantom modal -->
+<div id="phantomModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.7);justify-content:center;align-items:center;">
+  <div style="background:#1e1e1e;padding:25px;border-radius:15px;max-width:380px;color:#0ff;">
+    <h3>Phantom required</h3>
+    <p>Install Phantom wallet to continue.</p>
+    <button class="wallet-btn" onclick="installPhantom()">Install</button>
+  </div>
+</div>
 
+<script>
+/* ============================
+Replace with your token info
+============================ */
+const TOKEN_MINT = "J4Db1dSx5qkhghjbzNXarMyQ2KirijJGGFb9h9jzpump";
+const PAIR_ADDRESS = "45sspkuqs1ssbedqxd2mzrmdjyaxf7gyqyhs5xdxuwc5";
+
+// Buy button link to Pump.Fun
+document.getElementById("buyBtn").onclick = () =>
+  window.open(`https://pump.fun/coin/${TOKEN_MINT}`, "_blank");
+
+// Solana connection
 const connection = new solanaWeb3.Connection(
   solanaWeb3.clusterApiUrl("mainnet-beta"),
   "confirmed"
@@ -229,45 +240,40 @@ let provider;
 let publicKey;
 let lastPrice = 0;
 
-// shorten wallet address
 function shortenAddress(a){ return a.slice(0,4) + "..." + a.slice(-4); }
 
-// Connect / Disconnect Phantom
-const phantomBtn = document.getElementById("phantomBtn");
-const walletInfoCard = document.getElementById("walletInfoCard");
-
-phantomBtn.addEventListener("click", async ()=>{
-  if(!window.solana || !window.solana.isPhantom){
-    window.open("https://phantom.app/","_blank");
+async function connectWallet(){
+  if(!(window.solana && window.solana.isPhantom)){
+    showInstallPopup();
     return;
   }
   provider = window.solana;
-  if(!publicKey){
-    try{
-      const resp = await provider.connect();
-      publicKey = resp.publicKey;
-      updateUIConnected();
-      getBalances();
-    }catch{}
-  } else {
-    await provider.disconnect();
-    publicKey=null;
-    updateUIDisconnected();
-  }
-});
+  document.getElementById("spinner").style.display = "block";
+  try{
+    const resp = await provider.connect();
+    publicKey = resp.publicKey;
+    updateUIConnected();
+    confetti({particleCount:120,spread:80,origin:{y:0.6}});
+    getBalances();
+  }catch(e){}
+  document.getElementById("spinner").style.display = "none";
+}
 
-// UI updates
 function updateUIConnected(){
-  phantomBtn.classList.add("connected");
-  walletInfoCard.style.display="block";
+  connectBtn.style.display="none";
+  disconnectBtn.style.display="inline-block";
+  walletInfo.style.display="block";
+  walletAddress.innerText = shortenAddress(publicKey.toString());
 }
 
-function updateUIDisconnected(){
-  phantomBtn.classList.remove("connected");
-  walletInfoCard.style.display="none";
+async function disconnectWallet(){
+  if(provider) await provider.disconnect();
+  publicKey=null;
+  connectBtn.style.display="inline-block";
+  disconnectBtn.style.display="none";
+  walletInfo.style.display="none";
 }
 
-// Auto connect if trusted
 async function autoConnect(){
   if(window.solana && window.solana.isPhantom){
     provider = window.solana;
@@ -284,65 +290,49 @@ async function autoConnect(){
 
 window.addEventListener("load", autoConnect);
 
-// Detect if wallet is disconnected from plugin
-setInterval(async ()=>{
-  if(provider && publicKey){
-    const isConnected = provider.isConnected;
-    if(!isConnected){
-      publicKey=null;
-      updateUIDisconnected();
-    }
-  }
-},3000);
-
-// Fetch balances
 async function getBalances(){
   if(!publicKey) return;
   const balance = await connection.getBalance(publicKey);
-  document.getElementById("solBalance").innerText = (balance / solanaWeb3.LAMPORTS_PER_SOL).toFixed(4);
+  solBalance.innerText = (balance / solanaWeb3.LAMPORTS_PER_SOL).toFixed(4);
   const tokenAccounts = await connection.getParsedTokenAccountsByOwner(
     publicKey,
     { mint: new solanaWeb3.PublicKey(TOKEN_MINT) }
   );
   let tokenAmount = 0;
-  if(tokenAccounts.value.length>0){
+  if(tokenAccounts.value.length > 0){
     tokenAmount = tokenAccounts.value[0].account.data.parsed.info.tokenAmount.uiAmount;
   }
-  document.getElementById("tokenBalance").innerText = tokenAmount ?? 0;
-  document.getElementById("usdValue").innerText = ((tokenAmount||0)*lastPrice).toFixed(2);
+  tokenBalance.innerText = tokenAmount ?? 0;
+  usdValue.innerText = ((tokenAmount||0) * lastPrice).toFixed(2);
 }
 
-// Fetch token price, FDV, holders
 async function fetchTokenData(){
   try{
     const res = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${TOKEN_MINT}`);
     const data = await res.json();
     const pair = data.pairs[0];
-    lastPrice = parseFloat(pair.priceUsd)||0;
-    document.getElementById("price").innerText = lastPrice.toFixed(6);
-    document.getElementById("marketcap").innerText = pair.fdv ? parseFloat(pair.fdv).toLocaleString() : "N/A";
-    document.getElementById("holders").innerText = pair.holders ? pair.holders.toLocaleString() : "N/A";
+    lastPrice = parseFloat(pair.priceUsd) || 0;
+    price.innerText = lastPrice ? lastPrice.toFixed(6) : "0";
+    marketcap.innerText = pair.fdv ? parseFloat(pair.fdv).toLocaleString() : "N/A";
+    holders.innerText = pair.holders ? pair.holders.toLocaleString() : "N/A";
     if(publicKey) getBalances();
-
     // Neon pulse on price update
-    const priceCard = document.getElementById("price").parentElement;
-    priceCard.style.textShadow="0 0 8px #0ff,0 0 15px #0ff";
-    setTimeout(()=>{ priceCard.style.textShadow="0 0 0 #0ff"; }, 500);
-
+    price.parentElement.classList.remove("pulse");
+    void price.parentElement.offsetWidth;
+    price.parentElement.classList.add("pulse");
   }catch{
-    document.getElementById("price").innerText="N/A";
-    document.getElementById("marketcap").innerText="N/A";
-    document.getElementById("holders").innerText="N/A";
+    price.innerText="N/A";
+    marketcap.innerText="N/A";
+    holders.innerText="N/A";
   }
 }
-
 setInterval(fetchTokenData,15000);
 fetchTokenData();
 
-// Buy button
-document.getElementById("buyBtn").onclick = ()=>{
-  window.open(`https://pump.fun/coin/${TOKEN_MINT}`,"_blank");
-};
+// Phantom modal
+function showInstallPopup(){ phantomModal.style.display="flex"; }
+function installPhantom(){ window.open("https://phantom.app/","_blank"); }
 </script>
+
 </body>
 </html>
