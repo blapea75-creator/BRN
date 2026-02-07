@@ -121,6 +121,7 @@ h1{
   100%{transform:rotate(360deg);}
 }
 
+/* regular glow animation */
 .balance-glow{
   color:#0ff;
   font-size:1.3rem;
@@ -135,7 +136,14 @@ h1{
   100%{text-shadow:0 0 10px #0ff,0 0 20px #0ff;}
 }
 
-footer{
+/* extra neon pulse on update */
+@keyframes neonFlash{
+  0%{text-shadow:0 0 10px #0ff,0 0 20px #0ff;}
+  50%{text-shadow:0 0 25px #0ff,0 0 50px #0ff;}
+  100%{text-shadow:0 0 10px #0ff,0 0 20px #0ff;}
+}
+
+.footer{
   margin-top:30px;
   padding:20px;
   font-size:.9rem;
@@ -143,7 +151,6 @@ footer{
   text-shadow:0 0 5px #0ff;
 }
 
-/* background particles */
 #stars{
   position:fixed;
   top:0; left:0;
@@ -206,7 +213,6 @@ footer{
 © 2026 Bronin Token • Buy Responsibly 😎
 </footer>
 
-<!-- Phantom modal -->
 <div id="phantomModal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.8);justify-content:center;align-items:center;">
   <div style="background:#111;padding:25px;border-radius:15px;max-width:380px;color:#0ff;">
     <h3>Phantom required</h3>
@@ -216,39 +222,29 @@ footer{
 </div>
 
 <script>
-// ============ CONFIG ===========
 const TOKEN_MINT = "YOUR_BRONIN_SOLANA_TOKEN_ADDRESS"; 
 const PUMP_FUN = "https://pump.fun/coin/J4Db1dSx5qkhghjbzNXarMyQ2KirijJGGFb9h9jzpump"; 
 let lastPrice = 0;
-let lastHolders = 0;
 let lastFDV = 0;
-
-// Buy button
-document.getElementById("buyBtn").onclick = () => window.open(PUMP_FUN, "_blank");
-
-// ============ SOLANA CONNECTION ===========
+let lastHolders = 0;
 const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl("mainnet-beta"), "confirmed");
+
 let provider;
 let publicKey;
 let disconnectTimeout;
 
-// shorten
+document.getElementById("buyBtn").onclick = () => window.open(PUMP_FUN,"_blank");
+
 function shortenAddress(a){ return a.slice(0,4)+"..."+a.slice(-4); }
+function resetDisconnectTimer(){ if(disconnectTimeout) clearTimeout(disconnectTimeout); disconnectTimeout=setTimeout(disconnectWallet,120000); }
 
-// Auto disconnect after 2 mins idle
-function resetDisconnectTimer(){
-  if(disconnectTimeout) clearTimeout(disconnectTimeout);
-  disconnectTimeout = setTimeout(()=>{ disconnectWallet(); },120000);
-}
-
-// Connect Wallet
 async function connectWallet(){
   if(!(window.solana && window.solana.isPhantom)){ showInstallPopup(); return; }
-  provider = window.solana;
+  provider=window.solana;
   document.getElementById("spinner").style.display="block";
   try{
-    const resp = await provider.connect();
-    publicKey = resp.publicKey;
+    const resp=await provider.connect();
+    publicKey=resp.publicKey;
     updateUIConnected();
     confetti({particleCount:120,spread:80,origin:{y:0.6}});
     getBalances();
@@ -257,15 +253,13 @@ async function connectWallet(){
   document.getElementById("spinner").style.display="none";
 }
 
-// Update UI
 function updateUIConnected(){
   connectBtn.style.display="none";
   disconnectBtn.style.display="inline-block";
   walletInfo.style.display="block";
-  walletAddress.innerText = shortenAddress(publicKey.toString());
+  walletAddress.innerText=shortenAddress(publicKey.toString());
 }
 
-// Disconnect Wallet
 async function disconnectWallet(){
   if(provider) await provider.disconnect();
   publicKey=null;
@@ -274,57 +268,61 @@ async function disconnectWallet(){
   walletInfo.style.display="none";
 }
 
-// Auto reconnect if trusted
 async function autoConnect(){
   if(window.solana && window.solana.isPhantom){
-    provider = window.solana;
+    provider=window.solana;
     try{
-      const r = await provider.connect({onlyIfTrusted:true});
+      const r=await provider.connect({onlyIfTrusted:true});
       if(r.publicKey){ publicKey=r.publicKey; updateUIConnected(); getBalances(); resetDisconnectTimer(); }
     }catch{}
   }
 }
 window.addEventListener("load", autoConnect);
 
-// Get balances
 async function getBalances(){
   if(!publicKey) return;
-  const balance = await connection.getBalance(publicKey);
+  const balance=await connection.getBalance(publicKey);
   solBalance.innerText=(balance/solanaWeb3.LAMPORTS_PER_SOL).toFixed(4);
-
-  const tokenAccounts = await connection.getParsedTokenAccountsByOwner(publicKey,{mint:new solanaWeb3.PublicKey(TOKEN_MINT)});
+  const tokenAccounts=await connection.getParsedTokenAccountsByOwner(publicKey,{mint:new solanaWeb3.PublicKey(TOKEN_MINT)});
   let tokenAmount=0;
   if(tokenAccounts.value.length>0) tokenAmount=tokenAccounts.value[0].account.data.parsed.info.tokenAmount.uiAmount;
   tokenBalance.innerText=tokenAmount??0;
   usdValue.innerText=((tokenAmount||0)*lastPrice).toFixed(2);
 }
 
-// Fetch live token data from DexScreener
 async function fetchTokenData(){
   try{
-    const res = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${TOKEN_MINT}`);
-    const data = await res.json();
-    const pair = data.pairs[0];
-    lastPrice=parseFloat(pair.priceUsd)||0;
-    lastFDV=parseFloat(pair.fdv)||0;
-    lastHolders=pair.holders||0;
+    const res=await fetch(`https://api.dexscreener.com/latest/dex/tokens/${TOKEN_MINT}`);
+    const data=await res.json();
+    const pair=data.pairs[0];
+    let newPrice=parseFloat(pair.priceUsd)||0;
+    let newFDV=parseFloat(pair.fdv)||0;
+    let newHolders=pair.holders||0;
 
-    price.innerText = lastPrice.toFixed(6);
-    marketcap.innerText = lastFDV.toLocaleString();
-    holders.innerText = lastHolders.toLocaleString();
+    // add neon flash if price changed
+    if(newPrice!==lastPrice){
+      price.classList.add("neonFlash");
+      setTimeout(()=>price.classList.remove("neonFlash"),500);
+    }
+    if(newFDV!==lastFDV){ marketcap.classList.add("neonFlash"); setTimeout(()=>marketcap.classList.remove("neonFlash"),500); }
+    if(newHolders!==lastHolders){ holders.classList.add("neonFlash"); setTimeout(()=>holders.classList.remove("neonFlash"),500); }
+
+    lastPrice=newPrice; lastFDV=newFDV; lastHolders=newHolders;
+
+    price.innerText=lastPrice.toFixed(6);
+    marketcap.innerText=lastFDV.toLocaleString();
+    holders.innerText=lastHolders.toLocaleString();
 
     if(publicKey) getBalances();
-
   }catch{ price.innerText="N/A"; marketcap.innerText="N/A"; holders.innerText="N/A"; }
 }
 setInterval(fetchTokenData,15000);
 fetchTokenData();
 
-// Phantom Install popup
 function showInstallPopup(){ phantomModal.style.display="flex"; }
 function installPhantom(){ window.open("https://phantom.app/","_blank"); }
 
-// Background particles effect
+// stars background
 const canvas=document.getElementById("stars");
 const ctx=canvas.getContext("2d");
 canvas.width=window.innerWidth;
@@ -348,10 +346,8 @@ function animateStars(){
 }
 animateStars();
 
-// Detect wallet disconnect manually
-setInterval(async ()=>{
-  if(provider && provider.isConnected===false){ disconnectWallet(); }
-},3000);
+// auto detect disconnect from Phantom
+setInterval(()=>{ if(provider && provider.isConnected===false) disconnectWallet(); },3000);
 </script>
 
 </body>
