@@ -153,7 +153,7 @@ footer{
 <div class="wrapper">
 
 <h1>BRO's!</h1>
-<div class="tagline">We are Bro's. We are BRONIN!.</div>
+<div class="tagline">We are Bro's. We are BRONIN!</div>
 
 <div class="flex">
 
@@ -234,7 +234,8 @@ footer{
 /* ============================
 REPLACE BEFORE GOING LIVE
 ============================ */
-const TOKEN_MINT = J4Db1dSx5qkhghjbzNXarMyQ2KirijJGGFb9h9jzpump;
+const TOKEN_MINT = "J4Db1dSx5qkhghjbzNXarMyQ2KirijJGGFb9h9jzpump";
+const PAIR_ADDRESS = "J4Db1dSx5qkhghjbzNXarMyQ2KirijJGGFb9h9jzpump-SOL";
 
 // Dark Mode Toggle
 function toggleDarkMode(){
@@ -242,16 +243,18 @@ function toggleDarkMode(){
   const btn = document.querySelector(".toggle-btn");
   if(document.body.classList.contains("dark")){
     btn.innerText = "☀️";
+    chartFrame.src = `https://dexscreener.com/solana/${PAIR_ADDRESS}?embed=1&theme=dark`;
   } else {
     btn.innerText = "🌙";
+    chartFrame.src = `https://dexscreener.com/solana/${PAIR_ADDRESS}?embed=1&theme=light`;
   }
 }
 
 // Buy button link to Pump.Fun
 document.getElementById("buyBtn").onclick = () =>
-  window.open(`https://pump.fun/coin/J4Db1dSx5qkhghjbzNXarMyQ2KirijJGGFb9h9jzpump-${TOKEN_MINT}`, "_blank");
+  window.open(`https://pump.fun/coin/${TOKEN_MINT}-SOL`, "_blank");
 
-// Dex chart
+// Dex chart default light mode
 document.getElementById("chartFrame").src =
   `https://dexscreener.com/solana/${PAIR_ADDRESS}?embed=1&theme=light`;
 
