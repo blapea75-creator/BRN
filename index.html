@@ -39,7 +39,7 @@ body{
   z-index:0;
 }
 
-/* Page banner image */
+/* Page banner text */
 #banner{
   width:100%;
   height:180px;
@@ -48,21 +48,25 @@ body{
   justify-content:center;
   position:relative;
   z-index:1;
-}
-#banner img{
-  max-height:140px;
-  object-fit:contain;
-  animation: bannerGlow 3s infinite alternate;
+  margin-top:20px;
 }
 
-@keyframes bannerGlow{
-  0%{ filter: drop-shadow(0 0 5px #0ff); }
-  50%{ filter: drop-shadow(0 0 20px #0ff); }
-  100%{ filter: drop-shadow(0 0 5px #0ff); }
+#banner h1{
+  font-size:4rem;
+  color:#00ffff;
+  font-weight:bold;
+  text-shadow: 0 0 5px #00ffff, 0 0 20px #00ffff, 0 0 40px #00ffff;
+  animation: bannerPulse 2s infinite alternate;
+}
+
+@keyframes bannerPulse{
+  0%{ text-shadow: 0 0 10px #00ffff, 0 0 30px #00ffff, 0 0 50px #00ffff; transform:scale(1);}
+  50%{ text-shadow: 0 0 20px #00ffff, 0 0 50px #00ffff, 0 0 80px #00ffff; transform:scale(1.05);}
+  100%{ text-shadow: 0 0 10px #00ffff, 0 0 30px #00ffff, 0 0 50px #00ffff; transform:scale(1);}
 }
 
 .wrapper{
-  padding:200px 20px 20px 20px; /* top padding adjusted for banner */
+  padding:220px 20px 20px 20px; /* top padding adjusted for banner */
   max-width:1100px;
   margin:auto;
   position:relative;
@@ -203,9 +207,9 @@ h1{
 
 <canvas id="stars"></canvas>
 
-<!-- Banner with logo -->
+<!-- Banner with text -->
 <div id="banner">
-  <img src="your-logo.png" alt="Bronin Token Logo">
+  <h1>BRONIN</h1>
 </div>
 
 <div class="wrapper">
@@ -261,7 +265,7 @@ h1{
 
 <script>
 // Replace with your token mint address
-const TOKEN_MINT = "J4Db1dSx5qkhghjbzNXarMyQ2KirijJGGFb9h9jzpump"; 
+const TOKEN_MINT = "YOUR_BRONIN_SOLANA_TOKEN_ADDRESS"; 
 const PUMP_FUN = "https://pump.fun/coin/J4Db1dSx5qkhghjbzNXarMyQ2KirijJGGFb9h9jzpump"; 
 let lastPrice = 0, lastFDV = 0, lastHolders = 0;
 const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl("mainnet-beta"), "confirmed");
@@ -323,7 +327,7 @@ async function fetchTokenData(){
 
     lastPrice=newPrice; lastFDV=newFDV; lastHolders=newHolders;
     price.innerText=lastPrice.toFixed(6);
-    marketcap.innerText=lastFDV.toLocaleString();
+    marketcap.innerText=newFDV.toLocaleString();
     holders.innerText=newHolders.toLocaleString();
     if(publicKey) getBalances();
   }catch{ price.innerText="N/A"; marketcap.innerText="N/A"; holders.innerText="N/A"; }
