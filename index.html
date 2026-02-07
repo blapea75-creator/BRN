@@ -39,23 +39,6 @@ body{
   z-index:0;
 }
 
-/* Banner at top */
-#banner{
-  width:100%;
-  height:150px;
-  background: linear-gradient(90deg, #00ffff33, #00ffffaa, #00ffff33);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:2rem;
-  font-weight:bold;
-  color:#0ff;
-  text-shadow:0 0 10px #0ff, 0 0 20px #0ff, 0 0 30px #0ff;
-  animation: bannerGlow 3s infinite alternate;
-  z-index:1;
-  position:relative;
-}
-
 @keyframes bannerGlow{
   0%{ text-shadow:0 0 10px #0ff,0 0 20px #0ff; }
   50%{ text-shadow:0 0 25px #0ff,0 0 50px #0ff; }
@@ -205,10 +188,6 @@ h1{
 <canvas id="stars"></canvas>
 
 <!-- Page Banner -->
-<div id="banner">BRONIN TOKEN</div>
-
-<div class="wrapper">
-
 <h1>BRO's!</h1>
 <div class="tagline">We are Bro's. We are BRONIN!</div>
 
@@ -385,4 +364,5 @@ setInterval(()=>{ if(provider && provider.isConnected===false) disconnectWallet(
 
 </body>
 </html>
+
 
