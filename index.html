@@ -43,11 +43,14 @@
         .logo-link { font-size: 1.6rem; font-weight: 900; letter-spacing: 4px; color: var(--primary); text-decoration: none; font-family: 'Space Grotesk'; }
 
         .wallet-container { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+        
         .balance-chip { 
             background: rgba(0, 255, 163, 0.1); padding: 5px 15px; border-radius: 50px; 
             font-size: 0.75rem; border: 1px solid var(--primary); display: none;
             color: var(--primary); font-weight: 800; font-family: 'Space Grotesk';
+            cursor: pointer; transition: 0.2s;
         }
+        .balance-chip:hover { background: rgba(0, 255, 163, 0.2); }
 
         .container { max-width: 900px; margin: 120px auto 0 auto; padding: 0 20px 60px 20px; text-align: center; }
         h1 { font-family: 'Space Grotesk'; font-size: 5rem; font-weight: 700; background: linear-gradient(90deg, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 1; }
@@ -111,7 +114,7 @@
             <button id="connectBtn" class="wallet-btn" onclick="handleFullAuth()">Connect & Verify</button>
             <button id="disconnectBtn" class="wallet-btn" onclick="handleDisconnect()">Logout</button>
         </div>
-        <div id="userBalance" class="balance-chip">0 SLX HELD</div>
+        <div id="userBalance" class="balance-chip" onclick="copyUserWallet()" title="Click to copy wallet address">0 SLX HELD</div>
     </div>
 </div>
 
@@ -176,6 +179,16 @@
         } catch (e) { logConsole("Auth failed."); }
     }
 
+    // FUNCTION TO COPY ADDRESS
+    function copyUserWallet() {
+        if (!walletAddress) return;
+        navigator.clipboard.writeText(walletAddress);
+        const bal = document.getElementById('userBalance');
+        const originalText = bal.innerText;
+        bal.innerText = "ADDRESS COPIED!";
+        setTimeout(() => { bal.innerText = originalText; }, 1500);
+    }
+
     async function executeSecureBurn() {
         const provider = window.phantom?.solana;
         const amount = document.getElementById('burnAmount').value;
@@ -194,13 +207,11 @@
 
             tx.feePayer = userPub;
             tx.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
-
             const { signature } = await provider.signAndSendTransaction(tx);
             
             document.getElementById('pending-overlay').style.display = 'flex';
             await connection.confirmTransaction(signature);
             
-            // SHOW SUCCESS
             document.getElementById('pending-overlay').style.display = 'none';
             document.getElementById('success-link').href = `https://solscan.io/tx/${signature}`;
             document.getElementById('success-modal').style.display = 'flex';
@@ -220,9 +231,10 @@
             const mintPub = new solanaWeb3.PublicKey(MINT);
             const ownerPub = new solanaWeb3.PublicKey(walletAddress);
             const res = await connection.getParsedTokenAccountsByOwner(ownerPub, { mint: mintPub });
-            const amount = res.value.length > 0 ? res.value[0].account.data.parsed.info.tokenAmount.uiAmount : 0;
-            document.getElementById('userBalance').innerText = `${amount.toLocaleString()} SLX HELD`;
-            document.getElementById('userBalance').style.display = "block";
+            let amount = res.value.length > 0 ? res.value[0].account.data.parsed.info.tokenAmount.uiAmount : 0;
+            const balElement = document.getElementById('userBalance');
+            balElement.innerText = `${amount.toLocaleString()} SLX HELD`;
+            balElement.style.display = "block";
         } catch (e) {}
     }
 
@@ -258,8 +270,11 @@
     }
 
     async function handleDisconnect() {
+        // Removed the extra signMessage prompt as requested
         await window.phantom?.solana.disconnect();
-        walletAddress = null; updateUI(null); logConsole("Logged out.");
+        walletAddress = null; 
+        updateUI(null); 
+        logConsole("Logged out.");
     }
 
     function updateUI(addr) {
@@ -284,7 +299,9 @@
     function logConsole(msg) { document.getElementById('console-text').innerText = "> " + msg; }
 
     fetchStats(); fetchBurnHistory();
-    setInterval(fetchStats, 60000); setInterval(fetchBurnHistory, 30000);
+    setInterval(fetchStats, 60000); 
+    setInterval(fetchBurnHistory, 30000);
+    setInterval(fetchUserBalance, 15000);
 </script>
 </body>
 </html>
