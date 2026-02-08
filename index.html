@@ -11,11 +11,11 @@
         :root {
             --primary: #00ffa3; --secondary: #dc1fff; --burn-red: #ff4b4b;
             --bg: #0b0b0e; --card-bg: rgba(20, 20, 25, 0.9); --text: #ffffff;
-            --header-h: 80px;
+            --header-h: 80px; --footer-h: 40px;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text); min-height: 100vh; overflow: hidden; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
         #vanta-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
 
         /* HEADER */
@@ -28,15 +28,19 @@
 
         .wallet-actions { display: flex; align-items: center; gap: 12px; }
         .balance-chip { background: rgba(0, 255, 163, 0.05); padding: 8px 16px; border-radius: 50px; font-size: 0.75rem; border: 1px solid rgba(0, 255, 163, 0.3); color: var(--primary); font-weight: 800; display: none; }
-        .copy-btn { background: #1a1a1a; border: 1px solid #333; color: white; padding: 8px 14px; border-radius: 50px; font-size: 0.65rem; cursor: pointer; display: none; text-transform: uppercase; font-weight: 700; transition: 0.2s; border: 1px solid rgba(255,255,255,0.1); }
+        .copy-btn { background: #1a1a1a; border: 1px solid rgba(255,255,255,0.1); color: white; padding: 8px 14px; border-radius: 50px; font-size: 0.65rem; cursor: pointer; display: none; text-transform: uppercase; font-weight: 700; transition: 0.2s; }
         .copy-btn:hover { background: #252525; border-color: var(--primary); }
 
-        /* LAYOUT */
-        .main-layout { display: grid; grid-template-columns: 1fr 320px; height: calc(100vh - var(--header-h) - 40px); margin-top: var(--header-h); }
-        .terminal-content { padding: 40px; overflow-y: auto; display: flex; flex-direction: column; align-items: center; }
+        /* MAIN LAYOUT - STACKED */
+        .main-layout { 
+            display: flex; flex-direction: column; align-items: center;
+            margin-top: var(--header-h); 
+            padding-bottom: calc(var(--footer-h) + 40px);
+            width: 100%;
+        }
 
-        .container-box { max-width: 650px; width: 100%; text-align: center; }
-        h1 { font-family: 'Space Grotesk'; font-size: 4.5rem; font-weight: 700; background: linear-gradient(90deg, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 5px; }
+        .container-box { max-width: 650px; width: 90%; text-align: center; margin-top: 40px; }
+        h1 { font-family: 'Space Grotesk'; font-size: clamp(3rem, 10vw, 4.5rem); font-weight: 700; background: linear-gradient(90deg, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 5px; }
         .description { color: #888; font-size: 0.9rem; margin-bottom: 30px; letter-spacing: 1px; }
 
         .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 25px; }
@@ -50,21 +54,23 @@
         .btn-dex { background: #ab9ff2; color: #000; }
         .btn-burn { background: var(--burn-red); color: #fff; width: 100%; margin-top: 15px; }
 
-        .burn-portal { background: var(--card-bg); padding: 30px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); text-align: left; margin-bottom: 25px; transition: 0.5s; }
+        /* INCINERATOR & LOGS WRAPPER */
+        .burn-portal { background: var(--card-bg); padding: 30px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); text-align: left; margin-bottom: 20px; transition: 0.5s; }
         .input-wrapper { position: relative; display: flex; gap: 8px; }
         input { flex-grow: 1; background:rgba(0,0,0,0.5); border:1px solid #333; padding:18px 15px; color:white; border-radius:12px; outline:none; font-family: 'monospace'; }
         
         .addon-btns { display: flex; gap: 5px; position: absolute; right: 10px; top: 50%; transform: translateY(-50%); }
-        .max-btn { background: rgba(0, 255, 163, 0.1); border: 1px solid var(--primary); color: var(--primary); padding: 5px 10px; border-radius: 6px; font-size: 0.7rem; font-weight: 800; cursor: pointer; transition: 0.2s; }
-        .plus-btn { background: rgba(220, 31, 255, 0.1); border: 1px solid var(--secondary); color: var(--secondary); padding: 5px 10px; border-radius: 6px; font-size: 0.7rem; font-weight: 800; cursor: pointer; }
+        .max-btn, .plus-btn { padding: 5px 10px; border-radius: 6px; font-size: 0.7rem; font-weight: 800; cursor: pointer; transition: 0.2s; }
+        .max-btn { background: rgba(0, 255, 163, 0.1); border: 1px solid var(--primary); color: var(--primary); }
+        .plus-btn { background: rgba(220, 31, 255, 0.1); border: 1px solid var(--secondary); color: var(--secondary); }
 
-        .audit-sidebar { background: rgba(0, 0, 0, 0.6); border-left: 1px solid rgba(0, 255, 163, 0.1); padding: 20px; display: flex; flex-direction: column; backdrop-filter: blur(10px); }
-        .sidebar-title { font-family: 'Space Grotesk'; font-size: 0.75rem; color: var(--primary); margin-bottom: 15px; letter-spacing: 2px; text-transform: uppercase; border-bottom: 1px solid #222; padding-bottom: 10px; }
-        .log-container { flex-grow: 1; font-family: 'monospace'; font-size: 0.7rem; overflow-y: auto; }
-        .log-entry { margin-bottom: 12px; padding: 10px; background: rgba(255,255,255,0.02); border-radius: 8px; border-left: 2px solid #333; transition: 0.2s; }
+        /* LOGS AT BOTTOM OF INCINERATOR */
+        .history-section { width: 100%; text-align: left; background: rgba(0, 0, 0, 0.4); border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); padding: 20px; }
+        .sidebar-title { font-family: 'Space Grotesk'; font-size: 0.7rem; color: var(--primary); margin-bottom: 12px; letter-spacing: 2px; text-transform: uppercase; opacity: 0.8; }
+        .log-container { font-family: 'monospace'; font-size: 0.75rem; max-height: 200px; overflow-y: auto; }
+        .log-entry { margin-bottom: 8px; padding: 8px; background: rgba(255,255,255,0.02); border-radius: 6px; border-left: 2px solid #333; }
         .log-entry.success { border-left-color: var(--primary); color: var(--primary); }
-        .log-entry a { color: var(--primary); text-decoration: none; display: block; margin-top: 5px; font-size: 0.6rem; opacity: 0.7; }
-        .log-entry a:hover { opacity: 1; text-decoration: underline; }
+        .log-entry a { color: var(--primary); text-decoration: none; display: block; margin-top: 4px; font-size: 0.65rem; opacity: 0.7; }
 
         .social-row { margin-top: 30px; display: flex; justify-content: center; align-items: center; gap: 25px; }
         .social-row a { transition: 0.3s; display: flex; align-items: center; opacity: 0.6; }
@@ -72,15 +78,12 @@
 
         /* FOOTER */
         .footer {
-            position: fixed; bottom: 0; left: 0; width: 100%; height: 40px;
+            position: fixed; bottom: 0; left: 0; width: 100%; height: var(--footer-h);
             background: rgba(11, 11, 14, 0.95); border-top: 1px solid rgba(0, 255, 163, 0.2);
             display: flex; justify-content: center; align-items: center;
             z-index: 1001; backdrop-filter: blur(10px);
         }
-        .footer-text {
-            font-family: 'Space Grotesk'; font-size: 0.7rem; font-weight: 700;
-            letter-spacing: 3px; color: rgba(255, 255, 255, 0.6); text-transform: uppercase;
-        }
+        .footer-text { font-family: 'Space Grotesk'; font-size: 0.7rem; font-weight: 700; letter-spacing: 3px; color: rgba(255, 255, 255, 0.6); text-transform: uppercase; }
         .footer-text span { color: var(--primary); }
     </style>
 </head>
@@ -99,45 +102,43 @@
 </div>
 
 <div class="main-layout">
-    <div class="terminal-content">
-        <div class="container-box">
-            <h1>SOLEX</h1>
-            <p class="description"><b>SOLEX</b> is a meme token on Solana. Securely incinerate tokens to reduce supply and recover SOL rent.</p>
-            
-            <div class="stats-grid">
-                <div class="stat-box"><div class="stat-label">Price</div><div id="tokenPrice" class="stat-val">Syncing...</div></div>
-                <div class="stat-box"><div class="stat-label">FDV</div><div id="tokenFDV" class="stat-val">Syncing...</div></div>
-                <div class="stat-box"><div class="stat-label"><b>$SLX</b> Burned</div><div id="tokenBurned" class="stat-val" style="color:var(--burn-red)">Syncing...</div></div>
-            </div>
+    <div class="container-box">
+        <h1>SOLEX</h1>
+        <p class="description"><b>SOLEX</b> is a meme token on Solana. Securely incinerate tokens to reduce supply and recover SOL rent.</p>
+        
+        <div class="stats-grid">
+            <div class="stat-box"><div class="stat-label">Price</div><div id="tokenPrice" class="stat-val">Syncing...</div></div>
+            <div class="stat-box"><div class="stat-label">FDV</div><div id="tokenFDV" class="stat-val">Syncing...</div></div>
+            <div class="stat-box"><div class="stat-label">Burned</div><div id="tokenBurned" class="stat-val" style="color:var(--burn-red)">Syncing...</div></div>
+        </div>
 
-            <div class="btn-group">
-                <a href="https://pump.fun/coin/J4Db1dSx5qkhghjbzNXarMyQ2KirijJGGFb9h9jzpump" target="_blank" class="btn btn-buy">BUY <b>$SLX</b></a>
-                <a href="https://dexscreener.com/solana/J4Db1dSx5qkhghjbzNXarMyQ2KirijJGGFb9h9jzpump" target="_blank" class="btn btn-dex">LIVE CHART</a>
-            </div>
+        <div class="btn-group">
+            <a href="https://pump.fun/coin/J4Db1dSx5qkhghjbzNXarMyQ2KirijJGGFb9h9jzpump" target="_blank" class="btn btn-buy">BUY <b>$SLX</b></a>
+            <a href="https://dexscreener.com/solana/J4Db1dSx5qkhghjbzNXarMyQ2KirijJGGFb9h9jzpump" target="_blank" class="btn btn-dex">CHART</a>
+        </div>
 
-            <div class="burn-portal" id="burn-area" style="opacity: 0.3; pointer-events: none;">
-                <h3 style="font-family:'Space Grotesk'; color:var(--burn-red); margin-bottom:15px; font-size: 0.8rem;">INCINERATOR</h3>
-                <div class="input-wrapper">
-                    <input type="number" id="burnAmount" placeholder="Amount to burn">
-                    <div class="addon-btns">
-                        <button class="plus-btn" onclick="addOneMillion()">+1M</button>
-                        <button class="max-btn" onclick="setMax()">MAX</button>
-                    </div>
+        <div class="burn-portal" id="burn-area" style="opacity: 0.3; pointer-events: none;">
+            <h3 style="font-family:'Space Grotesk'; color:var(--burn-red); margin-bottom:15px; font-size: 0.8rem;">INCINERATOR</h3>
+            <div class="input-wrapper">
+                <input type="number" id="burnAmount" placeholder="Amount to burn">
+                <div class="addon-btns">
+                    <button class="plus-btn" onclick="addOneMillion()">+1M</button>
+                    <button class="max-btn" onclick="setMax()">MAX</button>
                 </div>
-                <button id="burnSubmit" class="btn btn-burn" onclick="executeBurn()">EXECUTE BURN & RECLAIM RENT</button>
             </div>
+            <button id="burnSubmit" class="btn btn-burn" onclick="executeBurn()">EXECUTE BURN & RECLAIM RENT</button>
+        </div>
 
-            <div class="social-row">
-                <a href="https://x.com/Only_BRONin" target="_blank"><svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
-                <a href="https://pump.fun/coin/J4Db1dSx5qkhghjbzNXarMyQ2KirijJGGFb9h9jzpump" target="_blank"><img src="https://pump.fun/_next/image?url=%2Flogo.png&w=64&q=75" width="28" height="28" style="border-radius: 4px; filter: grayscale(1) brightness(2);"></a>
+        <div class="history-section">
+            <div class="sidebar-title">Burn History</div>
+            <div class="log-container" id="log-container">
+                <div class="log-entry">> TERMINAL_READY...</div>
             </div>
         </div>
-    </div>
 
-    <div class="audit-sidebar">
-        <div class="sidebar-title">Burn History</div>
-        <div class="log-container" id="log-container">
-            <div class="log-entry">> TERMINAL_READY...</div>
+        <div class="social-row">
+            <a href="https://x.com/Only_BRONin" target="_blank"><svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
+            <a href="https://pump.fun/coin/J4Db1dSx5qkhghjbzNXarMyQ2KirijJGGFb9h9jzpump" target="_blank"><img src="https://pump.fun/_next/image?url=%2Flogo.png&w=64&q=75" width="28" height="28" style="border-radius: 4px; filter: grayscale(1) brightness(2);"></a>
         </div>
     </div>
 </div>
@@ -152,7 +153,6 @@
 <script>
     VANTA.NET({ el: "#vanta-canvas", mouseControls: true, color: 0x00ffa3, backgroundColor: 0x0b0b0e, points: 8 });
     
-    // CONFIG
     const MINT_ADDRESS = "J4Db1dSx5qkhghjbzNXarMyQ2KirijJGGFb9h9jzpump";
     const INITIAL_SUPPLY = 1000000000;
     const DECIMALS = 6; 
@@ -202,23 +202,17 @@
         try {
             const resp = await provider.connect();
             const pubKey = resp.publicKey.toString();
-            
-            // Signature Auth
             const message = `SOL EX TERMINAL VERIFICATION\n\nSign to verify: ${pubKey}\nTS: ${Date.now()}`;
             const encodedMessage = new TextEncoder().encode(message);
             await provider.signMessage(encodedMessage, "utf8");
-
             walletAddress = pubKey;
             localStorage.setItem('solex_wallet', walletAddress);
             updateUI(true);
             updateEverything();
             addLog("AUTH_SUCCESS: Wallet Verified");
-        } catch (e) { 
-            addLog("AUTH_FAILED: User Rejected Signature"); 
-        }
+        } catch (e) { addLog("AUTH_FAILED: User Rejected Signature"); }
     }
 
-    // SPL Instruction Encoding (7 = Burn, 9 = CloseAccount)
     function encodeSPL(type, amount) {
         const layout = new Uint8Array(9);
         layout[0] = type;
@@ -232,82 +226,36 @@
     async function executeBurn() {
         const amountInput = document.getElementById('burnAmount').value;
         const amount = parseFloat(amountInput);
-        
         if (!amount || amount <= 0) return addLog("ERROR: Invalid Amount");
         if (amount > userBalanceValue) return addLog("ERROR: Insufficient Balance");
-
         const provider = window.phantom?.solana;
         addLog(`PREPARING_BURN: ${amount} SLX...`);
-
         try {
             const userPubKey = new solanaWeb3.PublicKey(walletAddress);
             const mintPubKey = new solanaWeb3.PublicKey(MINT_ADDRESS);
-            const [ata] = solanaWeb3.PublicKey.findProgramAddressSync(
-                [userPubKey.toBuffer(), TOKEN_PROGRAM_ID.toBuffer(), mintPubKey.toBuffer()],
-                ASSOCIATED_TOKEN_PROGRAM_ID
-            );
-
+            const [ata] = solanaWeb3.PublicKey.findProgramAddressSync([userPubKey.toBuffer(), TOKEN_PROGRAM_ID.toBuffer(), mintPubKey.toBuffer()], ASSOCIATED_TOKEN_PROGRAM_ID);
             const transaction = new solanaWeb3.Transaction();
-            
-            // 1. BURN
             const burnQty = Math.floor(amount * Math.pow(10, DECIMALS));
             transaction.add(new solanaWeb3.TransactionInstruction({
                 keys: [{ pubkey: ata, isSigner: false, isWritable: true }, { pubkey: mintPubKey, isSigner: false, isWritable: true }, { pubkey: userPubKey, isSigner: true, isWritable: false }],
-                programId: TOKEN_PROGRAM_ID,
-                data: encodeSPL(7, burnQty)
+                programId: TOKEN_PROGRAM_ID, data: encodeSPL(7, burnQty)
             }));
-
-            // 2. RENT RECLAIM (If full balance burned)
             if (amount >= userBalanceValue) {
                 addLog("MAX_BURN_DETECTED: Reclaiming SOL Rent...");
                 transaction.add(new solanaWeb3.TransactionInstruction({
                     keys: [{ pubkey: ata, isSigner: false, isWritable: true }, { pubkey: userPubKey, isSigner: false, isWritable: true }, { pubkey: userPubKey, isSigner: true, isWritable: false }],
-                    programId: TOKEN_PROGRAM_ID,
-                    data: encodeSPL(9)
+                    programId: TOKEN_PROGRAM_ID, data: encodeSPL(9)
                 }));
             }
-
             const { blockhash } = await connection.getLatestBlockhash();
             transaction.recentBlockhash = blockhash;
             transaction.feePayer = userPubKey;
-
             const signed = await provider.signAndSendTransaction(transaction);
             addLog("PENDING: Confirming on Blockchain...");
             await connection.confirmTransaction(signed.signature);
-            
             addLog(`BURN_SUCCESS: ${amount} SLX Incinerated`, signed.signature);
             updateEverything();
-        } catch (err) {
-            addLog("BURN_FAILED: Transaction Cancelled");
-        }
+        } catch (err) { addLog("BURN_FAILED: Transaction Cancelled"); }
     }
 
     function addOneMillion() {
-        const input = document.getElementById('burnAmount');
-        input.value = (parseFloat(input.value) || 0) + 1000000;
-    }
-
-    function setMax() { document.getElementById('burnAmount').value = userBalanceValue; }
-    
-    function updateUI(active) {
-        document.getElementById('connectBtn').style.display = active ? "none" : "block";
-        document.getElementById('logoutBtn').style.display = active ? "block" : "none";
-        document.getElementById('userBalance').style.display = active ? "block" : "none";
-        document.getElementById('copyBtn').style.display = active ? "block" : "none";
-        document.getElementById('burn-area').style.opacity = active ? "1" : "0.3";
-        document.getElementById('burn-area').style.pointerEvents = active ? "auto" : "none";
-    }
-
-    function handleLogout() { localStorage.removeItem('solex_wallet'); location.reload(); }
-    function copyWallet() {
-        navigator.clipboard.writeText(walletAddress);
-        document.getElementById('copyBtn').innerText = "COPIED!";
-        setTimeout(() => { document.getElementById('copyBtn').innerText = "Copy Address"; }, 2000);
-    }
-
-    if (walletAddress) updateUI(true);
-    updateEverything();
-    setInterval(updateEverything, 15000);
-</script>
-</body>
-</html>
