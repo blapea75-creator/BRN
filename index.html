@@ -172,6 +172,7 @@
             <div class="input-wrapper">
                 <input type="number" id="burnAmount" placeholder="Amount to burn">
                 <div class="addon-btns">
+                    <button class="plus-btn" style="background: rgba(0, 150, 255, 0.1); border-color: #0096ff; color: #0096ff;" onclick="addOneHundredK()">+100K</button>
                     <button class="plus-btn" onclick="addOneMillion()">+1M</button>
                     <button class="max-btn" onclick="setMax()">MAX</button>
                 </div>
@@ -321,6 +322,10 @@
         } catch (err) { addLog("BURN_FAILED: Transaction Cancelled"); }
     }
 
+    function addOneHundredK() {
+        const input = document.getElementById('burnAmount');
+        input.value = (parseFloat(input.value) || 0) + 100000;
+    }
     function addOneMillion() {
         const input = document.getElementById('burnAmount');
         input.value = (parseFloat(input.value) || 0) + 1000000;
