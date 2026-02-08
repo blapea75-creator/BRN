@@ -20,6 +20,20 @@
         body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
         #vanta-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
 
+        /* MODAL OVERLAYS */
+        #pending-overlay, #success-modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.92); z-index: 9999; display: none;
+            flex-direction: column; align-items: center; justify-content: center;
+            backdrop-filter: blur(12px); text-align: center; padding: 20px;
+        }
+
+        .success-card { background: #141419; padding: 40px; border-radius: 30px; border: 2px solid var(--primary); max-width: 400px; width: 100%; box-shadow: 0 0 50px rgba(0,255,163,0.1); }
+        .success-icon { font-size: 4rem; margin-bottom: 20px; color: var(--primary); }
+
+        .spinner { width: 60px; height: 60px; border: 5px solid rgba(0,255,163,0.1); border-top: 5px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
         .header-bar {
             height: var(--header-h); background: rgba(11, 11, 14, 0.9); border-bottom: 2px solid var(--primary);
             padding: 0 25px; display: flex; justify-content: space-between; align-items: center;
@@ -36,17 +50,20 @@
         }
 
         .container { max-width: 900px; margin: 120px auto 0 auto; padding: 0 20px 60px 20px; text-align: center; }
-        h1 { font-family: 'Space Grotesk'; font-size: 5rem; font-weight: 700; background: linear-gradient(90deg, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        h1 { font-family: 'Space Grotesk'; font-size: 5rem; font-weight: 700; background: linear-gradient(90deg, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 1; }
+        
+        .description { font-family: 'Space Grotesk'; color: #888; font-size: 1.1rem; margin: 15px 0 30px 0; max-width: 600px; display: inline-block; line-height: 1.6; }
+        .description b { color: var(--primary); }
 
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin: 35px 0; }
-        .stat-box { background: var(--card-bg); padding: 22px; border-radius: 18px; border: 1px solid rgba(255,255,255,0.1); transition: 0.3s; }
-        .stat-box:hover { border-color: var(--primary); transform: translateY(-5px); }
+        .stat-box { background: var(--card-bg); padding: 22px; border-radius: 18px; border: 1px solid rgba(255,255,255,0.1); }
         .stat-box label { display: block; font-size: 0.65rem; color: #888; text-transform: uppercase; margin-bottom: 5px; }
         .stat-box .val { font-family: 'Space Grotesk'; font-size: 1.25rem; font-weight: 700; }
 
         .btn { display: block; width: 100%; padding: 20px; border-radius: 15px; font-weight: 700; cursor: pointer; border: none; font-family: 'Space Grotesk'; transition: 0.3s; font-size: 1.2rem; text-decoration: none; margin-bottom: 20px; text-align: center;}
         .btn-buy { background: var(--primary); color: #000; box-shadow: 0 0 20px rgba(0, 255, 163, 0.2); }
         .btn-burn { background: var(--burn-red); color: #fff; }
+        .btn-close { background: #333; color: white; margin-top: 15px; font-size: 1rem; }
 
         .burn-portal { background: var(--card-bg); padding: 35px; border-radius: 24px; border: 1px solid rgba(255,255,255,0.1); text-align: left; margin-bottom: 30px; }
         .status-console { background: #000; color: var(--primary); font-family: 'monospace'; padding: 12px; border-radius: 8px; font-size: 0.75rem; margin-bottom: 15px; border: 1px solid #333; height: 42px; display: flex; align-items: center; }
@@ -65,10 +82,25 @@
         #disconnectBtn { background: rgba(255, 75, 75, 0.2); color: var(--burn-red); display: none; margin-left: 10px; border: 1px solid var(--burn-red); }
 
         .x-fixed { position: fixed; bottom: 25px; right: 25px; background: #fff; color: #000; width: 55px; height: 55px; border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 1000; transition: 0.3s; box-shadow: 0 5px 15px rgba(0,0,0,0.4); }
-        .x-fixed:hover { transform: scale(1.1) rotate(5deg); background: var(--primary); }
     </style>
 </head>
 <body>
+
+<div id="pending-overlay">
+    <div class="spinner"></div>
+    <h2 style="font-family: 'Space Grotesk'; letter-spacing: 2px;">INCINERATING TOKENS</h2>
+    <p style="color: #666; margin-top: 10px;">Awaiting blockchain confirmation...</p>
+</div>
+
+<div id="success-modal">
+    <div class="success-card">
+        <div class="success-icon">✓</div>
+        <h2 style="font-family: 'Space Grotesk'; margin-bottom: 10px;">BURN CONFIRMED</h2>
+        <p style="color: #aaa; margin-bottom: 25px;">The tokens have been permanently removed from supply.</p>
+        <a id="success-link" href="#" target="_blank" class="btn btn-buy" style="font-size: 1rem;">VIEW ON SOLSCAN ↗</a>
+        <button onclick="closeSuccess()" class="btn btn-close">Back to Terminal</button>
+    </div>
+</div>
 
 <div id="vanta-canvas"></div>
 
@@ -76,8 +108,8 @@
     <a href="javascript:location.reload();" class="logo-link">SOLEX</a>
     <div class="wallet-container">
         <div style="display: flex;">
-            <button id="connectBtn" class="wallet-btn" onclick="handleWalletConnect()">Connect & Verify</button>
-            <button id="disconnectBtn" class="wallet-btn" onclick="handleDisconnect()">Secure Logout</button>
+            <button id="connectBtn" class="wallet-btn" onclick="handleFullAuth()">Connect & Verify</button>
+            <button id="disconnectBtn" class="wallet-btn" onclick="handleDisconnect()">Logout</button>
         </div>
         <div id="userBalance" class="balance-chip">0 SLX HELD</div>
     </div>
@@ -85,6 +117,9 @@
 
 <div class="container">
     <h1>SolEx</h1>
+    <p class="description">
+        The ultimate <b>hyper-deflationary</b> terminal. Connect your wallet to access the incinerator, track live community burns, and witness the supply collapse in real-time.
+    </p>
     
     <div class="stats-grid">
         <div class="stat-box"><label>Live Price (USD)</label><div class="val" id="stat-price">$0.00</div></div>
@@ -96,7 +131,7 @@
 
     <div class="burn-portal" id="burn-area" style="opacity: 0.4; pointer-events: none;">
         <h3 style="font-family: 'Space Grotesk'; margin-bottom: 10px;">Secure Burn Portal</h3>
-        <div class="status-console" id="console-text">> Verification required to burn...</div>
+        <div class="status-console" id="console-text">> Wallet authentication required...</div>
         <input type="number" id="burnAmount" style="width:100%; background:rgba(0,0,0,0.4); border:1px solid #444; padding:18px; color:white; border-radius:12px; margin-bottom:15px; outline: none; font-size: 1.2rem;" placeholder="Amount of SLX to burn">
         <button id="burnBtn" class="btn btn-burn" onclick="executeSecureBurn()">SIGN & COMMIT BURN 🔥</button>
     </div>
@@ -104,19 +139,10 @@
     <div class="history-panel">
         <div class="history-header">
             <span>LIVE BURN FEED</span>
-            <span style="font-size: 0.6rem; color: #555;">BLOCKCHAIN REAL-TIME</span>
+            <span style="font-size: 0.6rem; color: #555;">ON-CHAIN PROOF</span>
         </div>
         <table class="history-table">
-            <thead>
-                <tr>
-                    <th>TX Signature</th>
-                    <th>Status</th>
-                    <th>Proof</th>
-                </tr>
-            </thead>
-            <tbody id="burn-history-body">
-                <tr><td colspan="3" style="text-align:center; color:#444; padding:20px;">Scanning blockchain...</td></tr>
-            </tbody>
+            <tbody id="burn-history-body"></tbody>
         </table>
     </div>
 </div>
@@ -136,81 +162,29 @@
     const connection = new solanaWeb3.Connection("https://api.mainnet-beta.solana.com");
     let walletAddress = null;
 
-    async function handleWalletConnect() {
+    async function handleFullAuth() {
         const provider = window.phantom?.solana;
         if (!provider) return window.open("https://phantom.app/", "_blank");
         try {
             const resp = await provider.connect();
-            const msg = `LOG IN TO SOLEX TERMINAL\nAddress: ${resp.publicKey.toString()}`;
+            const msg = `VERIFY IDENTITY FOR SOLEX\nWallet: ${resp.publicKey.toString()}`;
             await provider.signMessage(new TextEncoder().encode(msg), "utf8");
             walletAddress = resp.publicKey.toString();
             updateUI(walletAddress);
             await fetchUserBalance();
-            logConsole("Full Access Granted.");
-        } catch (e) { logConsole("Access Denied."); }
-    }
-
-    async function fetchUserBalance() {
-        if (!walletAddress) return;
-        try {
-            const mintPub = new solanaWeb3.PublicKey(MINT);
-            const ownerPub = new solanaWeb3.PublicKey(walletAddress);
-            const res = await connection.getParsedTokenAccountsByOwner(ownerPub, { mint: mintPub });
-            const amount = res.value.length > 0 ? res.value[0].account.data.parsed.info.tokenAmount.uiAmount : 0;
-            document.getElementById('userBalance').innerText = `${amount.toLocaleString()} SLX HELD`;
-            document.getElementById('userBalance').style.display = "block";
-        } catch (e) { console.error(e); }
-    }
-
-    async function fetchStats() {
-        try {
-            const res = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${MINT}`);
-            const data = await res.json();
-            const pair = data.pairs ? data.pairs[0] : null;
-            if (pair) {
-                document.getElementById('stat-price').innerText = `$${parseFloat(pair.priceUsd).toFixed(10)}`;
-                document.getElementById('stat-fdv').innerText = `$${parseInt(pair.fdv).toLocaleString()}`;
-            }
-            
-            // Fetch Global Burn Count from Incinerator ATA
-            const burnPub = new solanaWeb3.PublicKey(BURN_ADDR);
-            const mintPub = new solanaWeb3.PublicKey(MINT);
-            const burnATA = await splToken.getAssociatedTokenAddress(mintPub, burnPub);
-            const balRes = await connection.getTokenAccountBalance(burnATA);
-            document.getElementById('stat-burned').innerText = parseInt(balRes.value.uiAmount).toLocaleString();
-        } catch (e) { console.error("Stats fail", e); }
-    }
-
-    async function fetchBurnHistory() {
-        try {
-            const burnPub = new solanaWeb3.PublicKey(BURN_ADDR);
-            const signatures = await connection.getSignaturesForAddress(burnPub, { limit: 10 });
-            const tbody = document.getElementById('burn-history-body');
-            tbody.innerHTML = "";
-            signatures.forEach(sig => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td style="color:#aaa">${sig.signature.slice(0,10)}...</td>
-                    <td style="color:var(--primary)">CONFIRMED</td>
-                    <td><a href="https://solscan.io/tx/${sig.signature}" target="_blank" class="solscan-link">PROOF ↗</a></td>
-                `;
-                tbody.appendChild(row);
-            });
-        } catch (e) {}
+            logConsole("Terminal access granted.");
+        } catch (e) { logConsole("Auth failed."); }
     }
 
     async function executeSecureBurn() {
         const provider = window.phantom?.solana;
         const amount = document.getElementById('burnAmount').value;
-        if (!amount || amount <= 0) return alert("Enter burn amount.");
+        if (!amount || amount <= 0) return alert("Enter amount.");
 
         try {
-            document.getElementById('burnBtn').disabled = true;
-            logConsole("Awaiting Identity Signature...");
             const userPub = new solanaWeb3.PublicKey(walletAddress);
             const burnDest = new solanaWeb3.PublicKey(BURN_ADDR);
             const mintPub = new solanaWeb3.PublicKey(MINT);
-
             const userATA = await splToken.getAssociatedTokenAddress(mintPub, userPub);
             const burnATA = await splToken.getAssociatedTokenAddress(mintPub, burnDest);
 
@@ -222,30 +196,70 @@
             tx.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
 
             const { signature } = await provider.signAndSendTransaction(tx);
-            logConsole("Broadcasting Burn...");
+            
+            document.getElementById('pending-overlay').style.display = 'flex';
             await connection.confirmTransaction(signature);
             
-            logConsole("BURN SUCCESSFUL 🔥");
-            alert("SUCCESS! Tokens incinerated.");
-            window.open(`https://solscan.io/tx/${signature}`, "_blank");
+            // SHOW SUCCESS
+            document.getElementById('pending-overlay').style.display = 'none';
+            document.getElementById('success-link').href = `https://solscan.io/tx/${signature}`;
+            document.getElementById('success-modal').style.display = 'flex';
             
-            fetchUserBalance();
-            fetchBurnHistory();
-            fetchStats();
-        } catch (e) { logConsole("Burn Failed."); } 
-        finally { document.getElementById('burnBtn').disabled = false; }
+            fetchUserBalance(); fetchBurnHistory(); fetchStats();
+        } catch (e) { 
+            document.getElementById('pending-overlay').style.display = 'none';
+            logConsole("Burn failed."); 
+        }
+    }
+
+    function closeSuccess() { document.getElementById('success-modal').style.display = 'none'; }
+
+    async function fetchUserBalance() {
+        if (!walletAddress) return;
+        try {
+            const mintPub = new solanaWeb3.PublicKey(MINT);
+            const ownerPub = new solanaWeb3.PublicKey(walletAddress);
+            const res = await connection.getParsedTokenAccountsByOwner(ownerPub, { mint: mintPub });
+            const amount = res.value.length > 0 ? res.value[0].account.data.parsed.info.tokenAmount.uiAmount : 0;
+            document.getElementById('userBalance').innerText = `${amount.toLocaleString()} SLX HELD`;
+            document.getElementById('userBalance').style.display = "block";
+        } catch (e) {}
+    }
+
+    async function fetchStats() {
+        try {
+            const res = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${MINT}`);
+            const data = await res.json();
+            const pair = data.pairs ? data.pairs[0] : null;
+            if (pair) {
+                document.getElementById('stat-price').innerText = `$${parseFloat(pair.priceUsd).toFixed(10)}`;
+                document.getElementById('stat-fdv').innerText = `$${parseInt(pair.fdv).toLocaleString()}`;
+            }
+            const burnPub = new solanaWeb3.PublicKey(BURN_ADDR);
+            const mintPub = new solanaWeb3.PublicKey(MINT);
+            const burnATA = await splToken.getAssociatedTokenAddress(mintPub, burnPub);
+            const balRes = await connection.getTokenAccountBalance(burnATA);
+            document.getElementById('stat-burned').innerText = parseInt(balRes.value.uiAmount).toLocaleString();
+        } catch (e) {}
+    }
+
+    async function fetchBurnHistory() {
+        try {
+            const burnPub = new solanaWeb3.PublicKey(BURN_ADDR);
+            const signatures = await connection.getSignaturesForAddress(burnPub, { limit: 8 });
+            const tbody = document.getElementById('burn-history-body');
+            tbody.innerHTML = "";
+            signatures.forEach(sig => {
+                const row = document.createElement('tr');
+                row.innerHTML = `<td style="color:#aaa">${sig.signature.slice(0,10)}...</td><td style="color:var(--primary)">CONFIRMED</td><td><a href="https://solscan.io/tx/${sig.signature}" target="_blank" class="solscan-link">PROOF ↗</a></td>`;
+                tbody.appendChild(row);
+            });
+        } catch (e) {}
     }
 
     async function handleDisconnect() {
-        const provider = window.phantom?.solana;
-        try {
-            const msg = `LOG OUT OF SOLEX TERMINAL\nWallet: ${walletAddress}`;
-            await provider.signMessage(new TextEncoder().encode(msg), "utf8");
-            await provider.disconnect();
-            walletAddress = null;
-            updateUI(null);
-            logConsole("Session Closed.");
-        } catch (e) { }
+        await window.phantom?.solana.disconnect();
+        walletAddress = null; updateUI(null); logConsole("Logged out.");
     }
 
     function updateUI(addr) {
@@ -269,10 +283,8 @@
 
     function logConsole(msg) { document.getElementById('console-text').innerText = "> " + msg; }
 
-    fetchStats();
-    fetchBurnHistory();
-    setInterval(fetchStats, 30000);
-    setInterval(fetchBurnHistory, 20000);
+    fetchStats(); fetchBurnHistory();
+    setInterval(fetchStats, 60000); setInterval(fetchBurnHistory, 30000);
 </script>
 </body>
 </html>
