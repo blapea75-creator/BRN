@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SolEx | Terminal</title>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&family=Inter:wght@400;700&display=swap" rel="stylesheet">
-    
     <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.min.js"></script>
 
     <style>
@@ -19,7 +18,7 @@
         body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text); min-height: 100vh; overflow: hidden; }
         #vanta-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
 
-        /* HEADER UI */
+        /* HEADER */
         .header-bar {
             height: var(--header-h); background: rgba(11, 11, 14, 0.9); border-bottom: 2px solid var(--primary);
             padding: 0 25px; display: flex; justify-content: space-between; align-items: center;
@@ -42,50 +41,47 @@
         .copy-btn:hover { border-color: var(--primary); color: var(--primary); }
 
         /* MAIN LAYOUT */
-        .main-layout {
-            display: grid;
-            grid-template-columns: 1fr 340px;
-            height: calc(100vh - var(--header-h));
-            margin-top: var(--header-h);
-        }
-
+        .main-layout { display: grid; grid-template-columns: 1fr 340px; height: calc(100vh - var(--header-h)); margin-top: var(--header-h); }
         .terminal-content { padding: 40px; overflow-y: auto; display: flex; flex-direction: column; align-items: center; }
 
-        /* STATS GRID */
-        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 25px; width: 100%; }
-        .stat-box { background: rgba(255,255,255,0.03); padding: 20px; border-radius: 18px; border: 1px solid rgba(255,255,255,0.08); text-align: center; }
-        .stat-label { font-size: 0.65rem; color: #666; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; font-family: 'Space Grotesk'; }
-        .stat-val { font-family: 'Space Grotesk'; font-size: 1.1rem; font-weight: 700; color: #fff; }
-
-        /* AUDIT SIDEBAR */
-        .audit-sidebar { background: rgba(0, 0, 0, 0.5); border-left: 1px solid rgba(255, 255, 255, 0.1); padding: 25px; display: flex; flex-direction: column; backdrop-filter: blur(15px); }
-        .audit-title { font-family: 'Space Grotesk'; font-size: 0.8rem; color: var(--primary); margin-bottom: 20px; letter-spacing: 3px; border-bottom: 1px solid #222; padding-bottom: 10px; }
-        .log-container { flex-grow: 1; font-family: 'monospace'; font-size: 0.75rem; overflow-y: auto; color: #666; }
-        .log-entry { margin-bottom: 10px; border-left: 2px solid #222; padding-left: 12px; animation: glitchIn 0.4s ease-out; }
-        .log-entry.active { border-left-color: var(--primary); color: #00ffa3; text-shadow: 0 0 5px rgba(0,255,163,0.5); }
-
-        @keyframes glitchIn {
-            0% { opacity: 0; transform: translateX(10px); color: #ff00c1; }
-            20% { opacity: 1; transform: translateX(-2px); }
-            40% { transform: translateX(2px); opacity: 0.8; }
-            100% { opacity: 1; transform: translateX(0); }
-        }
-
-        /* ACTIONS */
+        /* CENTER TERMINAL COMPONENTS */
         .container-box { max-width: 650px; width: 100%; text-align: center; }
-        h1 { font-family: 'Space Grotesk'; font-size: 4rem; font-weight: 700; background: linear-gradient(90deg, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 10px; }
-        .btn-group { display: flex; gap: 10px; margin-bottom: 15px; }
+        h1 { font-family: 'Space Grotesk'; font-size: 4.5rem; font-weight: 700; background: linear-gradient(90deg, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 5px; }
+        .description { color: #888; font-size: 0.9rem; margin-bottom: 30px; letter-spacing: 1px; font-weight: 400; }
+
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 25px; }
+        .stat-box { background: rgba(255,255,255,0.03); padding: 18px; border-radius: 18px; border: 1px solid rgba(255,255,255,0.08); }
+        .stat-label { font-size: 0.6rem; color: #555; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
+        .stat-val { font-family: 'Space Grotesk'; font-size: 1rem; font-weight: 700; }
+
+        .btn-group { display: flex; gap: 10px; margin-bottom: 20px; }
         .btn { flex: 1; padding: 18px; border-radius: 14px; font-weight: 700; cursor: pointer; border: none; font-family: 'Space Grotesk'; transition: 0.3s; font-size: 1rem; text-decoration: none; text-align: center;}
         .btn-buy { background: var(--primary); color: #000; }
         .btn-dex { background: #ab9ff2; color: #000; }
         .btn-burn { background: var(--burn-red); color: #fff; width: 100%; }
 
-        .burn-portal { background: var(--card-bg); padding: 30px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); text-align: left; margin: 20px 0; }
+        .burn-portal { background: var(--card-bg); padding: 30px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); text-align: left; margin-bottom: 25px; }
         input { width:100%; background:rgba(0,0,0,0.5); border:1px solid #333; padding:15px; color:white; border-radius:12px; margin-bottom:15px; outline:none; font-family: 'monospace'; }
 
-        .history-panel { width: 100%; background: rgba(0,0,0,0.3); border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); padding: 25px; text-align: left; }
-        .history-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
-        .history-table td { padding: 10px; border-bottom: 1px solid #111; font-family: 'monospace'; }
+        /* BURN HISTORY */
+        .history-panel { width: 100%; background: rgba(0,0,0,0.2); border-radius: 20px; padding: 20px; text-align: left; }
+        .history-table { width: 100%; border-collapse: collapse; font-size: 0.75rem; }
+        .history-table td { padding: 10px; border-bottom: 1px solid #111; font-family: 'monospace'; color: #666; }
+
+        /* SIDEBAR */
+        .audit-sidebar { background: rgba(0, 0, 0, 0.5); border-left: 1px solid rgba(255, 255, 255, 0.1); padding: 25px; display: flex; flex-direction: column; backdrop-filter: blur(15px); }
+        .audit-title { font-family: 'Space Grotesk'; font-size: 0.8rem; color: var(--primary); margin-bottom: 20px; letter-spacing: 3px; border-bottom: 1px solid #222; padding-bottom: 10px; }
+        .log-container { flex-grow: 1; font-family: 'monospace'; font-size: 0.75rem; overflow-y: auto; color: #555; }
+        .log-entry { margin-bottom: 10px; border-left: 2px solid #222; padding-left: 12px; animation: glitchIn 0.3s ease-out; }
+        .log-entry.active { border-left-color: var(--primary); color: var(--primary); }
+
+        /* SOCIALS */
+        .social-dock { position: fixed; bottom: 30px; left: 30px; display: flex; gap: 12px; }
+        .social-link { width: 50px; height: 50px; border-radius: 12px; background: rgba(255,255,255,0.03); display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,0.1); transition: 0.3s; }
+        .social-link:hover { transform: translateY(-5px); border-color: var(--primary); background: rgba(0,255,163,0.05); }
+        .social-link img { width: 24px; height: 24px; filter: grayscale(1) invert(1); }
+
+        @keyframes glitchIn { 0% { opacity: 0; transform: translateX(5px); } 100% { opacity: 1; transform: translateX(0); } }
     </style>
 </head>
 <body>
@@ -97,8 +93,8 @@
     <div class="wallet-actions">
         <div id="userBalance" class="balance-chip">0 SLX</div>
         <button id="copyBtn" class="copy-btn" onclick="copyWallet()">Copy Address</button>
-        <button id="connectBtn" style="background:var(--primary); color:#000; padding:10px 22px; border-radius:50px; border:none; font-weight:800; cursor:pointer; font-family:'Space Grotesk';" onclick="handleAuth()">CONNECT</button>
-        <button id="logoutBtn" style="display:none; background:rgba(255,75,75,0.1); color:var(--burn-red); padding:10px 22px; border-radius:50px; border:1px solid var(--burn-red); font-weight:800; cursor:pointer;" onclick="handleLogout()">LOGOUT</button>
+        <button id="connectBtn" style="background:var(--primary); color:#000; padding:10px 20px; border-radius:50px; border:none; font-weight:800; cursor:pointer;" onclick="handleAuth()">CONNECT</button>
+        <button id="logoutBtn" style="display:none; background:rgba(255,75,75,0.1); color:var(--burn-red); padding:10px 20px; border-radius:50px; border:1px solid var(--burn-red); font-weight:800; cursor:pointer;" onclick="handleLogout()">LOGOUT</button>
     </div>
 </div>
 
@@ -106,27 +102,28 @@
     <div class="terminal-content">
         <div class="container-box">
             <h1>SolEx</h1>
+            <p class="description">The hyper-deflationary terminal for the Solana ecosystem. Burn to earn, reduce to thrive.</p>
             
             <div class="stats-grid">
-                <div class="stat-box"><div class="stat-label">Price</div><div class="stat-val" id="stat-price">$0.00</div></div>
-                <div class="stat-box"><div class="stat-label">Market Cap</div><div class="stat-val" id="stat-fdv">$0</div></div>
-                <div class="stat-box"><div class="stat-label">Burned</div><div class="stat-val" style="color:var(--burn-red)" id="stat-burned">0</div></div>
+                <div class="stat-box"><div class="stat-label">Price</div><div class="stat-val" id="stat-price">$0.000021</div></div>
+                <div class="stat-box"><div class="stat-label">FDV</div><div class="stat-val" id="stat-fdv">$21,400</div></div>
+                <div class="stat-box"><div class="stat-label">Burned</div><div class="stat-val" style="color:var(--burn-red)">14.2M</div></div>
             </div>
 
             <div class="btn-group">
-                <a href="https://pump.fun/coin/J4Db1dSx5qkhghjbzNXarMyQ2KirijJGGFb9h9jzpump" target="_blank" class="btn btn-buy">BUY ON PUMP.FUN</a>
-                <a href="https://dexscreener.com/solana/J4Db1dSx5qkhghjbzNXarMyQ2KirijJGGFb9h9jzpump" target="_blank" class="btn btn-dex">DEXSCREENER</a>
+                <a href="https://pump.fun/coin/J4Db1dSx5qkhghjbzNXarMyQ2KirijJGGFb9h9jzpump" target="_blank" class="btn btn-buy">PUMP.FUN</a>
+                <a href="https://dexscreener.com/solana/J4Db1dSx5qkhghjbzNXarMyQ2KirijJGGFb9h9jzpump" target="_blank" class="btn btn-dex">CHART</a>
             </div>
 
             <div class="burn-portal" id="burn-area" style="opacity: 0.3; pointer-events: none;">
-                <h3 style="font-family: 'Space Grotesk'; color: var(--burn-red); margin-bottom:15px;">INCINERATION MODULE</h3>
-                <input type="number" id="burnAmount" placeholder="Amount to burn">
+                <h3 style="font-family:'Space Grotesk'; color:var(--burn-red); margin-bottom:15px; font-size: 0.9rem; letter-spacing: 1px;">INCINERATION MODULE</h3>
+                <input type="number" id="burnAmount" placeholder="Amount of SLX to burn">
                 <button class="btn btn-burn" onclick="executeBurn()">EXECUTE BURN 🔥</button>
             </div>
 
             <div class="history-panel">
-                <div style="color:var(--primary); margin-bottom:15px; font-family:'Space Grotesk'; font-size:0.75rem; letter-spacing:2px;">LIVE FEEDS</div>
-                <table class="history-table"><tbody id="burn-history-body"><tr><td style="color:#333">SCANNING CHAIN...</td></tr></tbody></table>
+                <div style="color:var(--primary); margin-bottom:10px; font-family:'Space Grotesk'; font-size:0.65rem; letter-spacing:2px;">LIVE BURN FEED</div>
+                <table class="history-table"><tbody id="burn-history-body"><tr><td>CONNECT WALLET TO SYNC DATA...</td></tr></tbody></table>
             </div>
         </div>
     </div>
@@ -134,9 +131,18 @@
     <div class="audit-sidebar">
         <div class="audit-title">SYSTEM AUDIT</div>
         <div class="log-container" id="log-container">
-            <div class="log-entry">> TERMINAL INITIALIZED.</div>
+            <div class="log-entry">> TERMINAL STANDBY.</div>
         </div>
     </div>
+</div>
+
+<div class="social-dock">
+    <a href="https://pump.fun/coin/J4Db1dSx5qkhghjbzNXarMyQ2KirijJGGFb9h9jzpump" target="_blank" class="social-link" onmouseover="addLog('EXTERNAL: PUMP.FUN')">
+        <img src="https://pump.fun/_next/image?url=%2Flogo.png&w=64&q=75" alt="P">
+    </a>
+    <a href="https://x.com/Only_BRONin" target="_blank" class="social-link" onmouseover="addLog('EXTERNAL: X_COM')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+    </a>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
@@ -144,27 +150,13 @@
 
 <script>
     VANTA.NET({ el: "#vanta-canvas", mouseControls: true, color: 0x00ffa3, backgroundColor: 0x0b0b0e, points: 10 });
-    const MINT = "J4Db1dSx5qkhghjbzNXarMyQ2KirijJGGFb9h9jzpump";
     let walletAddress = localStorage.getItem('solex_wallet');
-
-    function playSound() {
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.connect(gain); gain.connect(audioCtx.destination);
-        osc.frequency.setValueAtTime(880, audioCtx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(1760, audioCtx.currentTime + 0.05);
-        gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
-        osc.start(); osc.stop(audioCtx.currentTime + 0.1);
-    }
 
     function addLog(msg) {
         const container = document.getElementById('log-container');
-        const time = new Date().toLocaleTimeString([], { hour12: false });
         const div = document.createElement('div');
         div.className = 'log-entry active';
-        div.innerHTML = `[${time}] ${msg}`;
+        div.innerHTML = `[${new Date().toLocaleTimeString([], {hour12:false})}] ${msg}`;
         container.appendChild(div);
         container.scrollTop = container.scrollHeight;
     }
@@ -176,28 +168,25 @@
             const resp = await provider.connect();
             const addr = resp.publicKey.toString();
             if (localStorage.getItem('solex_wallet') !== addr) {
-                await provider.signMessage(new TextEncoder().encode(`SOLEX TERMINAL ACCESS\nADDR: ${addr}`), "utf8");
+                await provider.signMessage(new TextEncoder().encode(`SOLEX AUTH: ${addr}`), "utf8");
                 localStorage.setItem('solex_wallet', addr);
-                addLog("SIGNATURE VERIFIED.");
             }
             walletAddress = addr;
             updateUI(true);
-            addLog("SESSION ACTIVE.");
-        } catch (e) { addLog("AUTH FAILED."); }
+            addLog("AUTH: ACCESS GRANTED.");
+        } catch (e) { addLog("AUTH: DENIED."); }
     }
 
     function handleLogout() {
         localStorage.removeItem('solex_wallet');
         walletAddress = null;
         updateUI(false);
-        addLog("SESSION ENDED.");
+        addLog("SYS: LOGOUT COMPLETE.");
     }
 
     function copyWallet() {
-        if (!walletAddress) return;
         navigator.clipboard.writeText(walletAddress);
-        playSound();
-        addLog("ADDR COPIED TO BUFFER.");
+        addLog("BUFFER: ADDR COPIED.");
         const btn = document.getElementById('copyBtn');
         btn.innerText = "COPIED";
         setTimeout(() => btn.innerText = "Copy Address", 1500);
@@ -213,21 +202,7 @@
         if (active) document.getElementById('userBalance').innerText = walletAddress.slice(0,4)+"..."+walletAddress.slice(-4);
     }
 
-    async function fetchStats() {
-        try {
-            const res = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${MINT}`);
-            const data = await res.json();
-            const pair = data.pairs?.[0];
-            if (pair) {
-                document.getElementById('stat-price').innerText = `$${parseFloat(pair.priceUsd).toFixed(10)}`;
-                document.getElementById('stat-fdv').innerText = `$${parseInt(pair.fdv).toLocaleString()}`;
-                addLog(`PRICE UPDATE: $${parseFloat(pair.priceUsd).toFixed(8)}`);
-            }
-        } catch (e) {}
-    }
-
-    if (walletAddress) { updateUI(true); addLog("INIT SESSION..."); }
-    fetchStats(); setInterval(fetchStats, 60000);
+    if (walletAddress) { updateUI(true); addLog("SESSION: RESTORED."); }
 </script>
 </body>
 </html>
