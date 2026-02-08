@@ -32,7 +32,7 @@
         .copy-btn:hover { background: #252525; border-color: var(--primary); }
 
         /* LAYOUT */
-        .main-layout { display: grid; grid-template-columns: 1fr 300px; height: calc(100vh - var(--header-h)); margin-top: var(--header-h); }
+        .main-layout { display: grid; grid-template-columns: 1fr 320px; height: calc(100vh - var(--header-h)); margin-top: var(--header-h); }
         .terminal-content { padding: 40px; overflow-y: auto; display: flex; flex-direction: column; align-items: center; }
 
         .container-box { max-width: 650px; width: 100%; text-align: center; }
@@ -50,7 +50,7 @@
         .btn-dex { background: #ab9ff2; color: #000; }
         .btn-burn { background: var(--burn-red); color: #fff; width: 100%; margin-top: 15px; }
 
-        .burn-portal { background: var(--card-bg); padding: 30px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); text-align: left; margin-bottom: 25px; }
+        .burn-portal { background: var(--card-bg); padding: 30px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); text-align: left; margin-bottom: 25px; transition: 0.5s; }
         .input-wrapper { position: relative; display: flex; gap: 8px; }
         input { flex-grow: 1; background:rgba(0,0,0,0.5); border:1px solid #333; padding:18px 15px; color:white; border-radius:12px; outline:none; font-family: 'monospace'; }
         
@@ -58,12 +58,11 @@
         .max-btn { background: rgba(0, 255, 163, 0.1); border: 1px solid var(--primary); color: var(--primary); padding: 5px 10px; border-radius: 6px; font-size: 0.7rem; font-weight: 800; cursor: pointer; transition: 0.2s; }
         .plus-btn { background: rgba(220, 31, 255, 0.1); border: 1px solid var(--secondary); color: var(--secondary); padding: 5px 10px; border-radius: 6px; font-size: 0.7rem; font-weight: 800; cursor: pointer; }
 
-        /* SIDEBAR - UPDATED TO TRANSACTION HISTORY */
         .audit-sidebar { background: rgba(0, 0, 0, 0.6); border-left: 1px solid rgba(0, 255, 163, 0.1); padding: 20px; display: flex; flex-direction: column; backdrop-filter: blur(10px); }
         .sidebar-title { font-family: 'Space Grotesk'; font-size: 0.75rem; color: var(--primary); margin-bottom: 15px; letter-spacing: 2px; text-transform: uppercase; border-bottom: 1px solid #222; padding-bottom: 10px; }
         .log-container { flex-grow: 1; font-family: 'monospace'; font-size: 0.7rem; overflow-y: auto; }
         .log-entry { margin-bottom: 12px; padding: 10px; background: rgba(255,255,255,0.02); border-radius: 8px; border-left: 2px solid #333; transition: 0.2s; }
-        .log-entry.success { border-left-color: var(--primary); }
+        .log-entry.success { border-left-color: var(--primary); color: var(--primary); }
         .log-entry a { color: var(--primary); text-decoration: none; display: block; margin-top: 5px; font-size: 0.6rem; opacity: 0.7; }
         .log-entry a:hover { opacity: 1; text-decoration: underline; }
 
@@ -90,7 +89,7 @@
     <div class="terminal-content">
         <div class="container-box">
             <h1>SOLEX</h1>
-            <p class="description"><b>SOLEX</b> is a meme token created for fun, community, and shared energy. It thrives on viral culture and the belief that memes build real connections on Solana.</p>
+            <p class="description"><b>SOLEX</b> is a meme token on Solana. Securely incinerate tokens to reduce supply and recover SOL rent.</p>
             
             <div class="stats-grid">
                 <div class="stat-box"><div class="stat-label">Price</div><div id="tokenPrice" class="stat-val">Syncing...</div></div>
@@ -112,7 +111,7 @@
                         <button class="max-btn" onclick="setMax()">MAX</button>
                     </div>
                 </div>
-                <button id="burnSubmit" class="btn btn-burn" onclick="executeBurn()">EXECUTE BURN <b>$SLX</b></button>
+                <button id="burnSubmit" class="btn btn-burn" onclick="executeBurn()">EXECUTE BURN & RECLAIM RENT</button>
             </div>
 
             <div class="social-row">
@@ -136,8 +135,13 @@
 <script>
     VANTA.NET({ el: "#vanta-canvas", mouseControls: true, color: 0x00ffa3, backgroundColor: 0x0b0b0e, points: 8 });
     
+    // CONFIG
     const MINT_ADDRESS = "J4Db1dSx5qkhghjbzNXarMyQ2KirijJGGFb9h9jzpump";
-    const INITIAL_SUPPLY = 1000000000; 
+    const INITIAL_SUPPLY = 1000000000;
+    const DECIMALS = 6; 
+    const TOKEN_PROGRAM_ID = new solanaWeb3.PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA");
+    const ASSOCIATED_TOKEN_PROGRAM_ID = new solanaWeb3.PublicKey("ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL");
+    
     let walletAddress = localStorage.getItem('solex_wallet');
     let userBalanceValue = 0;
     const connection = new solanaWeb3.Connection("https://api.mainnet-beta.solana.com");
@@ -146,14 +150,10 @@
         const container = document.getElementById('log-container');
         const div = document.createElement('div');
         div.className = txSig ? 'log-entry success' : 'log-entry';
-        
         let content = `<div>> ${msg}</div>`;
-        if (txSig) {
-            content += `<a href="https://solscan.io/tx/${txSig}" target="_blank">VIEW ON SOLSCAN ↗</a>`;
-        }
-        
+        if (txSig) content += `<a href="https://solscan.io/tx/${txSig}" target="_blank">VIEW TRANSACTION ↗</a>`;
         div.innerHTML = content;
-        container.prepend(div); // Newest on top
+        container.prepend(div);
     }
 
     async function updateEverything() {
@@ -184,39 +184,90 @@
         if (!provider) return window.open("https://phantom.app/", "_blank");
         try {
             const resp = await provider.connect();
-            walletAddress = resp.publicKey.toString();
+            const pubKey = resp.publicKey.toString();
+            
+            // Signature Auth
+            const message = `SOL EX TERMINAL VERIFICATION\n\nSign to verify: ${pubKey}\nTS: ${Date.now()}`;
+            const encodedMessage = new TextEncoder().encode(message);
+            await provider.signMessage(encodedMessage, "utf8");
+
+            walletAddress = pubKey;
             localStorage.setItem('solex_wallet', walletAddress);
             updateUI(true);
             updateEverything();
-            addLog("WALLET_CONNECTED: " + walletAddress.slice(0,6) + "...");
-        } catch (e) { addLog("AUTH_FAILED"); }
+            addLog("AUTH_SUCCESS: Wallet Verified");
+        } catch (e) { 
+            addLog("AUTH_FAILED: User Rejected Signature"); 
+        }
+    }
+
+    // SPL Instruction Encoding (7 = Burn, 9 = CloseAccount)
+    function encodeSPL(type, amount) {
+        const layout = new Uint8Array(9);
+        layout[0] = type;
+        if (amount) {
+            const view = new DataView(layout.buffer);
+            view.setBigUint64(1, BigInt(amount), true);
+        }
+        return layout;
     }
 
     async function executeBurn() {
-        const amount = document.getElementById('burnAmount').value;
-        if (!amount || amount <= 0) return alert("Enter valid amount");
-        if (amount > userBalanceValue) return alert("Insufficient balance");
-
-        addLog(`INITIATING_BURN: ${amount} SLX...`);
+        const amountInput = document.getElementById('burnAmount').value;
+        const amount = parseFloat(amountInput);
         
-        try {
-            // Note: Real Solana burn requires creating a transaction with @solana/spl-token
-            // This is a simulation of the successful callback
-            setTimeout(() => {
-                const mockTx = "5ZWpY..." + Math.random().toString(36).substring(7); // Simulated Sig
-                addLog(`BURN_SUCCESS: ${amount} SLX destroyed`, mockTx);
-                updateEverything();
-            }, 1500);
+        if (!amount || amount <= 0) return addLog("ERROR: Invalid Amount");
+        if (amount > userBalanceValue) return addLog("ERROR: Insufficient Balance");
 
+        const provider = window.phantom?.solana;
+        addLog(`PREPARING_BURN: ${amount} SLX...`);
+
+        try {
+            const userPubKey = new solanaWeb3.PublicKey(walletAddress);
+            const mintPubKey = new solanaWeb3.PublicKey(MINT_ADDRESS);
+            const [ata] = solanaWeb3.PublicKey.findProgramAddressSync(
+                [userPubKey.toBuffer(), TOKEN_PROGRAM_ID.toBuffer(), mintPubKey.toBuffer()],
+                ASSOCIATED_TOKEN_PROGRAM_ID
+            );
+
+            const transaction = new solanaWeb3.Transaction();
+            
+            // 1. BURN
+            const burnQty = Math.floor(amount * Math.pow(10, DECIMALS));
+            transaction.add(new solanaWeb3.TransactionInstruction({
+                keys: [{ pubkey: ata, isSigner: false, isWritable: true }, { pubkey: mintPubKey, isSigner: false, isWritable: true }, { pubkey: userPubKey, isSigner: true, isWritable: false }],
+                programId: TOKEN_PROGRAM_ID,
+                data: encodeSPL(7, burnQty)
+            }));
+
+            // 2. RENT RECLAIM (If full balance burned)
+            if (amount >= userBalanceValue) {
+                addLog("MAX_BURN_DETECTED: Reclaiming SOL Rent...");
+                transaction.add(new solanaWeb3.TransactionInstruction({
+                    keys: [{ pubkey: ata, isSigner: false, isWritable: true }, { pubkey: userPubKey, isSigner: false, isWritable: true }, { pubkey: userPubKey, isSigner: true, isWritable: false }],
+                    programId: TOKEN_PROGRAM_ID,
+                    data: encodeSPL(9)
+                }));
+            }
+
+            const { blockhash } = await connection.getLatestBlockhash();
+            transaction.recentBlockhash = blockhash;
+            transaction.feePayer = userPubKey;
+
+            const signed = await provider.signAndSendTransaction(transaction);
+            addLog("PENDING: Confirming on Blockchain...");
+            await connection.confirmTransaction(signed.signature);
+            
+            addLog(`BURN_SUCCESS: ${amount} SLX Incinerated`, signed.signature);
+            updateEverything();
         } catch (err) {
-            addLog("BURN_FAILED: Transaction rejected");
+            addLog("BURN_FAILED: Transaction Cancelled");
         }
     }
 
     function addOneMillion() {
         const input = document.getElementById('burnAmount');
-        let current = parseFloat(input.value) || 0;
-        input.value = current + 1000000;
+        input.value = (parseFloat(input.value) || 0) + 1000000;
     }
 
     function setMax() { document.getElementById('burnAmount').value = userBalanceValue; }
