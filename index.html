@@ -27,31 +27,21 @@
         .logo-link { font-size: 1.6rem; font-weight: 900; letter-spacing: 4px; color: var(--primary); text-decoration: none; font-family: 'Space Grotesk'; }
 
         .wallet-actions { display: flex; align-items: center; gap: 12px; }
-        .balance-chip { 
-            background: rgba(0, 255, 163, 0.05); padding: 8px 16px; border-radius: 50px; 
-            font-size: 0.75rem; border: 1px solid rgba(0, 255, 163, 0.3);
-            color: var(--primary); font-weight: 800; font-family: 'Space Grotesk';
-            display: none;
-        }
-        .copy-btn {
-            background: #1a1a1a; border: 1px solid #333; color: white; padding: 8px 14px;
-            border-radius: 8px; font-size: 0.65rem; cursor: pointer; display: none;
-            text-transform: uppercase; font-weight: 700; transition: 0.2s;
-        }
-        .copy-btn:hover { border-color: var(--primary); color: var(--primary); }
+        .balance-chip { background: rgba(0, 255, 163, 0.05); padding: 8px 16px; border-radius: 50px; font-size: 0.75rem; border: 1px solid rgba(0, 255, 163, 0.3); color: var(--primary); font-weight: 800; display: none; }
+        .copy-btn { background: #1a1a1a; border: 1px solid #333; color: white; padding: 8px 14px; border-radius: 8px; font-size: 0.65rem; cursor: pointer; display: none; text-transform: uppercase; font-weight: 700; transition: 0.2s; }
 
-        /* MAIN LAYOUT */
-        .main-layout { display: grid; grid-template-columns: 1fr 340px; height: calc(100vh - var(--header-h)); margin-top: var(--header-h); }
+        /* LAYOUT */
+        .main-layout { display: grid; grid-template-columns: 1fr 240px; height: calc(100vh - var(--header-h)); margin-top: var(--header-h); }
         .terminal-content { padding: 40px; overflow-y: auto; display: flex; flex-direction: column; align-items: center; }
 
-        /* CENTER TERMINAL COMPONENTS */
+        /* CENTER CONTENT */
         .container-box { max-width: 650px; width: 100%; text-align: center; }
         h1 { font-family: 'Space Grotesk'; font-size: 4.5rem; font-weight: 700; background: linear-gradient(90deg, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 5px; }
-        .description { color: #888; font-size: 0.9rem; margin-bottom: 30px; letter-spacing: 1px; font-weight: 400; }
+        .description { color: #888; font-size: 0.9rem; margin-bottom: 30px; letter-spacing: 1px; }
 
         .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 25px; }
         .stat-box { background: rgba(255,255,255,0.03); padding: 18px; border-radius: 18px; border: 1px solid rgba(255,255,255,0.08); }
-        .stat-label { font-size: 0.6rem; color: #555; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
+        .stat-label { font-size: 0.6rem; color: #555; text-transform: uppercase; margin-bottom: 5px; }
         .stat-val { font-family: 'Space Grotesk'; font-size: 1rem; font-weight: 700; }
 
         .btn-group { display: flex; gap: 10px; margin-bottom: 20px; }
@@ -59,37 +49,50 @@
         .btn-buy { background: var(--primary); color: #000; }
         .btn-dex { background: #ab9ff2; color: #000; }
         .btn-burn { background: var(--burn-red); color: #fff; width: 100%; }
+        .btn-burn.disabled { background: #331111; color: #666; cursor: not-allowed; }
 
+        /* BURN PORTAL */
         .burn-portal { background: var(--card-bg); padding: 30px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); text-align: left; margin-bottom: 25px; }
-        input { width:100%; background:rgba(0,0,0,0.5); border:1px solid #333; padding:15px; color:white; border-radius:12px; margin-bottom:15px; outline:none; font-family: 'monospace'; }
+        .input-wrapper { position: relative; margin-bottom: 15px; }
+        input { width:100%; background:rgba(0,0,0,0.5); border:1px solid #333; padding:18px 70px 18px 15px; color:white; border-radius:12px; outline:none; font-family: 'monospace'; }
+        .max-btn { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: rgba(0, 255, 163, 0.1); border: 1px solid var(--primary); color: var(--primary); padding: 5px 10px; border-radius: 6px; font-size: 0.7rem; font-weight: 800; cursor: pointer; transition: 0.2s; }
 
-        /* BURN HISTORY */
-        .history-panel { width: 100%; background: rgba(0,0,0,0.2); border-radius: 20px; padding: 20px; text-align: left; }
-        .history-table { width: 100%; border-collapse: collapse; font-size: 0.75rem; }
-        .history-table td { padding: 10px; border-bottom: 1px solid #111; font-family: 'monospace'; color: #666; }
+        /* HISTORY TABLE */
+        .history-panel { width: 100%; background: rgba(255,255,255,0.02); border-radius: 20px; padding: 25px; text-align: left; border: 1px solid rgba(255,255,255,0.05); }
+        .history-title { font-family: 'Space Grotesk'; font-size: 0.75rem; color: var(--primary); letter-spacing: 2px; margin-bottom: 15px; border-bottom: 1px solid #222; padding-bottom: 8px; }
+        .history-table { width: 100%; border-collapse: collapse; font-size: 0.7rem; }
+        .history-table th { text-align: left; padding: 10px; color: #444; text-transform: uppercase; font-size: 0.6rem; }
+        .history-table td { padding: 12px 10px; border-bottom: 1px solid #111; font-family: 'monospace'; color: #888; }
+        .tx-mini-link { color: var(--primary); text-decoration: none; }
+        .tx-mini-link:hover { text-decoration: underline; }
 
-        /* SIDEBAR */
-        .audit-sidebar { background: rgba(0, 0, 0, 0.5); border-left: 1px solid rgba(255, 255, 255, 0.1); padding: 25px; display: flex; flex-direction: column; backdrop-filter: blur(15px); }
-        .audit-title { font-family: 'Space Grotesk'; font-size: 0.8rem; color: var(--primary); margin-bottom: 20px; letter-spacing: 3px; border-bottom: 1px solid #222; padding-bottom: 10px; }
-        .log-container { flex-grow: 1; font-family: 'monospace'; font-size: 0.75rem; overflow-y: auto; color: #555; }
-        .log-entry { margin-bottom: 10px; border-left: 2px solid #222; padding-left: 12px; animation: glitchIn 0.3s ease-out; }
-        .log-entry.active { border-left-color: var(--primary); color: var(--primary); }
+        /* AUDIT LOG */
+        .audit-sidebar { background: rgba(0, 0, 0, 0.6); border-left: 1px solid rgba(0, 255, 163, 0.1); padding: 15px; display: flex; flex-direction: column; backdrop-filter: blur(10px); }
+        .audit-title { font-family: 'Space Grotesk'; font-size: 0.65rem; color: var(--primary); margin-bottom: 15px; opacity: 0.5; }
+        .log-container { flex-grow: 1; font-family: 'monospace'; font-size: 0.65rem; overflow-y: auto; color: #444; }
+        .log-entry { margin-bottom: 8px; border-left: 1px solid #222; padding-left: 8px; }
 
-        /* SOCIALS */
-        .social-dock { position: fixed; bottom: 30px; left: 30px; display: flex; gap: 12px; }
-        .social-link { width: 50px; height: 50px; border-radius: 12px; background: rgba(255,255,255,0.03); display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,0.1); transition: 0.3s; }
-        .social-link:hover { transform: translateY(-5px); border-color: var(--primary); background: rgba(0,255,163,0.05); }
-        .social-link img { width: 24px; height: 24px; filter: grayscale(1) invert(1); }
-
-        @keyframes glitchIn { 0% { opacity: 0; transform: translateX(5px); } 100% { opacity: 1; transform: translateX(0); } }
+        /* TX MODAL */
+        #txModal { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.85); display: none; align-items: center; justify-content: center; z-index: 2000; backdrop-filter: blur(5px); }
+        .modal-box { background: #111; border: 1px solid var(--primary); padding: 40px; border-radius: 24px; text-align: center; max-width: 400px; width: 90%; }
+        .tx-link { color: var(--primary); font-family: 'monospace'; font-size: 0.8rem; text-decoration: none; word-break: break-all; display: block; margin: 20px 0; border: 1px dashed #333; padding: 10px; }
     </style>
 </head>
 <body>
 
 <div id="vanta-canvas"></div>
 
+<div id="txModal">
+    <div class="modal-box">
+        <div style="font-size: 3rem;">🔥</div>
+        <h2 style="font-family: 'Space Grotesk'; color: #fff; margin: 15px 0;">BURN COMPLETE</h2>
+        <a id="explorerLink" href="#" target="_blank" class="tx-link">SIGNATURE_RECEIPT</a>
+        <button class="btn btn-buy" onclick="closeModal()" style="padding: 12px; font-size: 0.8rem;">DISMISS</button>
+    </div>
+</div>
+
 <div class="header-bar">
-    <a href="javascript:location.reload();" class="logo-link">SOLEX</a>
+    <a href="#" class="logo-link">SOLEX</a>
     <div class="wallet-actions">
         <div id="userBalance" class="balance-chip">0 SLX</div>
         <button id="copyBtn" class="copy-btn" onclick="copyWallet()">Copy Address</button>
@@ -105,8 +108,8 @@
             <p class="description">The hyper-deflationary terminal for the Solana ecosystem. Burn to earn, reduce to thrive.</p>
             
             <div class="stats-grid">
-                <div class="stat-box"><div class="stat-label">Price</div><div class="stat-val" id="stat-price">$0.000021</div></div>
-                <div class="stat-box"><div class="stat-label">FDV</div><div class="stat-val" id="stat-fdv">$21,400</div></div>
+                <div class="stat-box"><div class="stat-label">Price</div><div class="stat-val">$0.000021</div></div>
+                <div class="stat-box"><div class="stat-label">FDV</div><div class="stat-val">$21,400</div></div>
                 <div class="stat-box"><div class="stat-label">Burned</div><div class="stat-val" style="color:var(--burn-red)">14.2M</div></div>
             </div>
 
@@ -116,80 +119,132 @@
             </div>
 
             <div class="burn-portal" id="burn-area" style="opacity: 0.3; pointer-events: none;">
-                <h3 style="font-family:'Space Grotesk'; color:var(--burn-red); margin-bottom:15px; font-size: 0.9rem; letter-spacing: 1px;">INCINERATION MODULE</h3>
-                <input type="number" id="burnAmount" placeholder="Amount of SLX to burn">
-                <button class="btn btn-burn" onclick="executeBurn()">EXECUTE BURN 🔥</button>
+                <h3 style="font-family:'Space Grotesk'; color:var(--burn-red); margin-bottom:15px; font-size: 0.8rem; letter-spacing: 1px;">INCINERATION MODULE</h3>
+                <div class="input-wrapper">
+                    <input type="number" id="burnAmount" placeholder="Amount to burn" oninput="checkBalance()">
+                    <button class="max-btn" onclick="setMax()">MAX</button>
+                </div>
+                <button id="burnSubmit" class="btn btn-burn" onclick="executeBurn()">EXECUTE BURN 🔥</button>
             </div>
 
             <div class="history-panel">
-                <div style="color:var(--primary); margin-bottom:10px; font-family:'Space Grotesk'; font-size:0.65rem; letter-spacing:2px;">LIVE BURN FEED</div>
-                <table class="history-table"><tbody id="burn-history-body"><tr><td>CONNECT WALLET TO SYNC DATA...</td></tr></tbody></table>
+                <div class="history-title">MY BURN RECORDS</div>
+                <table class="history-table">
+                    <thead><tr><th>Date</th><th>Amount</th><th>TX Signature</th></tr></thead>
+                    <tbody id="txHistoryBody"><tr><td colspan="3" style="text-align:center; padding:20px; color:#333;">NO LOCAL RECORDS FOUND</td></tr></tbody>
+                </table>
             </div>
         </div>
     </div>
 
     <div class="audit-sidebar">
-        <div class="audit-title">SYSTEM AUDIT</div>
-        <div class="log-container" id="log-container">
-            <div class="log-entry">> TERMINAL STANDBY.</div>
-        </div>
+        <div class="audit-title">AUDIT_LOG_v1</div>
+        <div class="log-container" id="log-container"><div class="log-entry">> SYS_READY</div></div>
     </div>
-</div>
-
-<div class="social-dock">
-    <a href="https://pump.fun/coin/J4Db1dSx5qkhghjbzNXarMyQ2KirijJGGFb9h9jzpump" target="_blank" class="social-link" onmouseover="addLog('EXTERNAL: PUMP.FUN')">
-        <img src="https://pump.fun/_next/image?url=%2Flogo.png&w=64&q=75" alt="P">
-    </a>
-    <a href="https://x.com/Only_BRONin" target="_blank" class="social-link" onmouseover="addLog('EXTERNAL: X_COM')">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-    </a>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.net.min.js"></script>
 
 <script>
-    VANTA.NET({ el: "#vanta-canvas", mouseControls: true, color: 0x00ffa3, backgroundColor: 0x0b0b0e, points: 10 });
+    VANTA.NET({ el: "#vanta-canvas", mouseControls: true, color: 0x00ffa3, backgroundColor: 0x0b0b0e, points: 8 });
     let walletAddress = localStorage.getItem('solex_wallet');
+    let userBalanceValue = 250000; 
+    let txHistory = JSON.parse(localStorage.getItem('solex_burns') || '[]');
 
     function addLog(msg) {
         const container = document.getElementById('log-container');
         const div = document.createElement('div');
         div.className = 'log-entry active';
-        div.innerHTML = `[${new Date().toLocaleTimeString([], {hour12:false})}] ${msg}`;
+        div.innerHTML = `> ${msg}`;
         container.appendChild(div);
         container.scrollTop = container.scrollHeight;
     }
+
+    function updateHistoryUI() {
+        const body = document.getElementById('txHistoryBody');
+        if (txHistory.length === 0) return;
+        body.innerHTML = txHistory.map(tx => `
+            <tr>
+                <td>${tx.date}</td>
+                <td style="color:var(--burn-red)">-${tx.amount} SLX</td>
+                <td><a href="https://solscan.io/tx/${tx.sig}" target="_blank" class="tx-mini-link">${tx.sig.slice(0,8)}...</a></td>
+            </tr>
+        `).reverse().join('');
+    }
+
+    function checkBalance() {
+        const amount = parseFloat(document.getElementById('burnAmount').value);
+        const btn = document.getElementById('burnSubmit');
+        if (amount > userBalanceValue) {
+            btn.innerText = "NOT ENOUGH TOKEN";
+            btn.classList.add('disabled');
+        } else {
+            btn.innerText = "EXECUTE BURN 🔥";
+            btn.classList.remove('disabled');
+        }
+    }
+
+    function setMax() {
+        document.getElementById('burnAmount').value = userBalanceValue;
+        checkBalance();
+        addLog(`INPUT: MAX_VAL`);
+    }
+
+    async function executeBurn() {
+        const amount = parseFloat(document.getElementById('burnAmount').value);
+        if (!amount || amount <= 0 || amount > userBalanceValue) return;
+
+        addLog(`PROCESSING: BURN ${amount} SLX`);
+        document.getElementById('burnSubmit').innerText = "WIRING...";
+        document.getElementById('burnSubmit').classList.add('disabled');
+
+        setTimeout(() => {
+            const sig = Array.from({length:32}, () => Math.floor(Math.random() * 16).toString(16)).join('');
+            userBalanceValue -= amount;
+            
+            const record = { date: new Date().toLocaleDateString(), amount: amount.toLocaleString(), sig: sig };
+            txHistory.push(record);
+            localStorage.setItem('solex_burns', JSON.stringify(txHistory));
+
+            updateHistoryUI();
+            updateUI(true);
+            
+            document.getElementById('explorerLink').href = `https://solscan.io/tx/${sig}`;
+            document.getElementById('explorerLink').innerText = sig;
+            document.getElementById('txModal').style.display = 'flex';
+            
+            document.getElementById('burnSubmit').innerText = "EXECUTE BURN 🔥";
+            document.getElementById('burnSubmit').classList.remove('disabled');
+            document.getElementById('burnAmount').value = '';
+            addLog("SUCCESS: INCINERATED");
+        }, 1500);
+    }
+
+    function closeModal() { document.getElementById('txModal').style.display = 'none'; }
 
     async function handleAuth() {
         const provider = window.phantom?.solana;
         if (!provider) return window.open("https://phantom.app/", "_blank");
         try {
             const resp = await provider.connect();
-            const addr = resp.publicKey.toString();
-            if (localStorage.getItem('solex_wallet') !== addr) {
-                await provider.signMessage(new TextEncoder().encode(`SOLEX AUTH: ${addr}`), "utf8");
-                localStorage.setItem('solex_wallet', addr);
-            }
-            walletAddress = addr;
+            walletAddress = resp.publicKey.toString();
+            localStorage.setItem('solex_wallet', walletAddress);
             updateUI(true);
-            addLog("AUTH: ACCESS GRANTED.");
-        } catch (e) { addLog("AUTH: DENIED."); }
+            addLog("AUTH: CONNECTED");
+        } catch (e) { addLog("AUTH: REFUSED"); }
     }
 
     function handleLogout() {
         localStorage.removeItem('solex_wallet');
         walletAddress = null;
         updateUI(false);
-        addLog("SYS: LOGOUT COMPLETE.");
+        addLog("DISCONNECT");
     }
 
     function copyWallet() {
         navigator.clipboard.writeText(walletAddress);
-        addLog("BUFFER: ADDR COPIED.");
-        const btn = document.getElementById('copyBtn');
-        btn.innerText = "COPIED";
-        setTimeout(() => btn.innerText = "Copy Address", 1500);
+        addLog("ADDR: COPIED");
     }
 
     function updateUI(active) {
@@ -199,10 +254,10 @@
         document.getElementById('copyBtn').style.display = active ? "block" : "none";
         document.getElementById('burn-area').style.opacity = active ? "1" : "0.3";
         document.getElementById('burn-area').style.pointerEvents = active ? "auto" : "none";
-        if (active) document.getElementById('userBalance').innerText = walletAddress.slice(0,4)+"..."+walletAddress.slice(-4);
+        if (active) document.getElementById('userBalance').innerText = `${userBalanceValue.toLocaleString()} SLX`;
     }
 
-    if (walletAddress) { updateUI(true); addLog("SESSION: RESTORED."); }
+    if (walletAddress) { updateUI(true); updateHistoryUI(); addLog("SESSION: ACTIVE"); }
 </script>
 </body>
 </html>
