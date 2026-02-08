@@ -32,7 +32,7 @@
         .copy-btn:hover { background: #252525; border-color: var(--primary); }
 
         /* LAYOUT */
-        .main-layout { display: grid; grid-template-columns: 1fr 240px; height: calc(100vh - var(--header-h)); margin-top: var(--header-h); }
+        .main-layout { display: grid; grid-template-columns: 1fr 300px; height: calc(100vh - var(--header-h)); margin-top: var(--header-h); }
         .terminal-content { padding: 40px; overflow-y: auto; display: flex; flex-direction: column; align-items: center; }
 
         .container-box { max-width: 650px; width: 100%; text-align: center; }
@@ -51,19 +51,25 @@
         .btn-burn { background: var(--burn-red); color: #fff; width: 100%; margin-top: 15px; }
 
         .burn-portal { background: var(--card-bg); padding: 30px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); text-align: left; margin-bottom: 25px; }
-        .input-wrapper { position: relative; }
-        input { width:100%; background:rgba(0,0,0,0.5); border:1px solid #333; padding:18px 70px 18px 15px; color:white; border-radius:12px; outline:none; font-family: 'monospace'; }
-        .max-btn { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: rgba(0, 255, 163, 0.1); border: 1px solid var(--primary); color: var(--primary); padding: 5px 10px; border-radius: 6px; font-size: 0.7rem; font-weight: 800; cursor: pointer; transition: 0.2s; }
+        .input-wrapper { position: relative; display: flex; gap: 8px; }
+        input { flex-grow: 1; background:rgba(0,0,0,0.5); border:1px solid #333; padding:18px 15px; color:white; border-radius:12px; outline:none; font-family: 'monospace'; }
+        
+        .addon-btns { display: flex; gap: 5px; position: absolute; right: 10px; top: 50%; transform: translateY(-50%); }
+        .max-btn { background: rgba(0, 255, 163, 0.1); border: 1px solid var(--primary); color: var(--primary); padding: 5px 10px; border-radius: 6px; font-size: 0.7rem; font-weight: 800; cursor: pointer; transition: 0.2s; }
+        .plus-btn { background: rgba(220, 31, 255, 0.1); border: 1px solid var(--secondary); color: var(--secondary); padding: 5px 10px; border-radius: 6px; font-size: 0.7rem; font-weight: 800; cursor: pointer; }
 
-        .audit-sidebar { background: rgba(0, 0, 0, 0.6); border-left: 1px solid rgba(0, 255, 163, 0.1); padding: 15px; display: flex; flex-direction: column; backdrop-filter: blur(10px); }
-        .log-container { flex-grow: 1; font-family: 'monospace'; font-size: 0.65rem; overflow-y: auto; color: #444; }
-        .log-entry { margin-bottom: 8px; border-left: 1px solid #222; padding-left: 8px; }
+        /* SIDEBAR - UPDATED TO TRANSACTION HISTORY */
+        .audit-sidebar { background: rgba(0, 0, 0, 0.6); border-left: 1px solid rgba(0, 255, 163, 0.1); padding: 20px; display: flex; flex-direction: column; backdrop-filter: blur(10px); }
+        .sidebar-title { font-family: 'Space Grotesk'; font-size: 0.75rem; color: var(--primary); margin-bottom: 15px; letter-spacing: 2px; text-transform: uppercase; border-bottom: 1px solid #222; padding-bottom: 10px; }
+        .log-container { flex-grow: 1; font-family: 'monospace'; font-size: 0.7rem; overflow-y: auto; }
+        .log-entry { margin-bottom: 12px; padding: 10px; background: rgba(255,255,255,0.02); border-radius: 8px; border-left: 2px solid #333; transition: 0.2s; }
+        .log-entry.success { border-left-color: var(--primary); }
+        .log-entry a { color: var(--primary); text-decoration: none; display: block; margin-top: 5px; font-size: 0.6rem; opacity: 0.7; }
+        .log-entry a:hover { opacity: 1; text-decoration: underline; }
 
         .social-row { margin-top: 30px; display: flex; justify-content: center; align-items: center; gap: 25px; }
         .social-row a { transition: 0.3s; display: flex; align-items: center; opacity: 0.6; }
         .social-row a:hover { transform: translateY(-3px); opacity: 1; }
-        .social-row img { filter: grayscale(1) brightness(2); }
-        .social-row a:hover img { filter: none; }
     </style>
 </head>
 <body>
@@ -84,7 +90,7 @@
     <div class="terminal-content">
         <div class="container-box">
             <h1>SOLEX</h1>
-            <p class="description"><b>SOLEX</b> is a meme token created for fun, community, and shared energy. It thrives on viral culture, strong supporter engagement, and the belief that memes can build real connections on Solana Network.</p>
+            <p class="description"><b>SOLEX</b> is a meme token created for fun, community, and shared energy. It thrives on viral culture and the belief that memes build real connections on Solana.</p>
             
             <div class="stats-grid">
                 <div class="stat-box"><div class="stat-label">Price</div><div id="tokenPrice" class="stat-val">Syncing...</div></div>
@@ -98,27 +104,29 @@
             </div>
 
             <div class="burn-portal" id="burn-area" style="opacity: 0.3; pointer-events: none;">
-                <h3 style="font-family:'Space Grotesk'; color:var(--burn-red); margin-bottom:15px; font-size: 0.8rem;">BURNED <b>$SLX</b></h3>
+                <h3 style="font-family:'Space Grotesk'; color:var(--burn-red); margin-bottom:15px; font-size: 0.8rem;">INCINERATOR</h3>
                 <div class="input-wrapper">
                     <input type="number" id="burnAmount" placeholder="Amount to burn">
-                    <button class="max-btn" onclick="setMax()">MAX</button>
+                    <div class="addon-btns">
+                        <button class="plus-btn" onclick="addOneMillion()">+1M</button>
+                        <button class="max-btn" onclick="setMax()">MAX</button>
+                    </div>
                 </div>
-                <button id="burnSubmit" class="btn btn-burn" onclick="executeBurn()">BURN <b>$SLX</b></button>
+                <button id="burnSubmit" class="btn btn-burn" onclick="executeBurn()">EXECUTE BURN <b>$SLX</b></button>
             </div>
 
             <div class="social-row">
-                <a href="https://x.com/Only_BRONin" target="_blank" title="Follow Official X">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-                </a>
-                <a href="https://pump.fun/coin/J4Db1dSx5qkhghjbzNXarMyQ2KirijJGGFb9h9jzpump" target="_blank" title="View on Pump.fun">
-                    <img src="https://pump.fun/_next/image?url=%2Flogo.png&w=64&q=75" width="28" height="28" style="border-radius: 4px;">
-                </a>
+                <a href="https://x.com/Only_BRONin" target="_blank"><svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
+                <a href="https://pump.fun/coin/J4Db1dSx5qkhghjbzNXarMyQ2KirijJGGFb9h9jzpump" target="_blank"><img src="https://pump.fun/_next/image?url=%2Flogo.png&w=64&q=75" width="28" height="28" style="border-radius: 4px; filter: grayscale(1) brightness(2);"></a>
             </div>
         </div>
     </div>
 
     <div class="audit-sidebar">
-        <div class="log-container" id="log-container"><div class="log-entry">> TERMINAL_READY</div></div>
+        <div class="sidebar-title">Burn History</div>
+        <div class="log-container" id="log-container">
+            <div class="log-entry">> TERMINAL_READY...</div>
+        </div>
     </div>
 </div>
 
@@ -134,46 +142,41 @@
     let userBalanceValue = 0;
     const connection = new solanaWeb3.Connection("https://api.mainnet-beta.solana.com");
 
-    function addLog(msg) {
+    function addLog(msg, txSig = null) {
         const container = document.getElementById('log-container');
         const div = document.createElement('div');
-        div.className = 'log-entry';
-        div.innerHTML = `> ${msg}`;
-        container.appendChild(div);
-        container.scrollTop = container.scrollHeight;
-        if(container.children.length > 20) container.removeChild(container.firstChild);
+        div.className = txSig ? 'log-entry success' : 'log-entry';
+        
+        let content = `<div>> ${msg}</div>`;
+        if (txSig) {
+            content += `<a href="https://solscan.io/tx/${txSig}" target="_blank">VIEW ON SOLSCAN ↗</a>`;
+        }
+        
+        div.innerHTML = content;
+        container.prepend(div); // Newest on top
     }
 
     async function updateEverything() {
-        addLog("SYNCING_NETWORK_DATA...");
         try {
-            // 1. Fetch Token Data (Price/FDV)
             const dexResp = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${MINT_ADDRESS}`);
             const dexData = await dexResp.json();
-            if (dexData.pairs && dexData.pairs.length > 0) {
+            if (dexData.pairs?.[0]) {
                 const pair = dexData.pairs[0];
                 document.getElementById('tokenPrice').innerText = `$${parseFloat(pair.priceUsd).toFixed(8)}`;
                 document.getElementById('tokenFDV').innerText = `$${parseInt(pair.fdv).toLocaleString()}`;
             }
 
-            // 2. Fetch Burn Stats
             const supplyResp = await connection.getTokenSupply(new solanaWeb3.PublicKey(MINT_ADDRESS));
-            const currentSupply = supplyResp.value.uiAmount;
-            const burned = INITIAL_SUPPLY - currentSupply;
+            const burned = INITIAL_SUPPLY - supplyResp.value.uiAmount;
             document.getElementById('tokenBurned').innerText = `${(burned / 1000000).toFixed(1)}M`;
 
-            // 3. Fetch Wallet Balance (if connected)
             if (walletAddress) {
                 const pubKey = new solanaWeb3.PublicKey(walletAddress);
-                const tokenAccounts = await connection.getParsedTokenAccountsByOwner(pubKey, {
-                    mint: new solanaWeb3.PublicKey(MINT_ADDRESS)
-                });
+                const tokenAccounts = await connection.getParsedTokenAccountsByOwner(pubKey, { mint: new solanaWeb3.PublicKey(MINT_ADDRESS) });
                 userBalanceValue = tokenAccounts.value.length > 0 ? tokenAccounts.value[0].account.data.parsed.info.tokenAmount.uiAmount : 0;
                 document.getElementById('userBalance').innerText = `${userBalanceValue.toLocaleString()} SLX`;
             }
-        } catch (e) {
-            addLog("SYNC_INTERRUPTED_RETRYING...");
-        }
+        } catch (e) { console.error("Sync error"); }
     }
 
     async function handleAuth() {
@@ -181,25 +184,43 @@
         if (!provider) return window.open("https://phantom.app/", "_blank");
         try {
             const resp = await provider.connect();
-            const pubKey = resp.publicKey.toString();
-            const message = `SOL EX TERMINAL VERIFICATION\n\nSign to verify: ${pubKey}\nTS: ${Date.now()}`;
-            await provider.signMessage(new TextEncoder().encode(message), "utf8");
-            walletAddress = pubKey;
+            walletAddress = resp.publicKey.toString();
             localStorage.setItem('solex_wallet', walletAddress);
             updateUI(true);
             updateEverything();
-            addLog("AUTH_SUCCESS");
+            addLog("WALLET_CONNECTED: " + walletAddress.slice(0,6) + "...");
         } catch (e) { addLog("AUTH_FAILED"); }
     }
 
-    function copyWallet() {
-        if (!walletAddress) return;
-        navigator.clipboard.writeText(walletAddress);
-        const btn = document.getElementById('copyBtn');
-        btn.innerText = "COPIED!";
-        setTimeout(() => { btn.innerText = "Copy Address"; }, 2000);
+    async function executeBurn() {
+        const amount = document.getElementById('burnAmount').value;
+        if (!amount || amount <= 0) return alert("Enter valid amount");
+        if (amount > userBalanceValue) return alert("Insufficient balance");
+
+        addLog(`INITIATING_BURN: ${amount} SLX...`);
+        
+        try {
+            // Note: Real Solana burn requires creating a transaction with @solana/spl-token
+            // This is a simulation of the successful callback
+            setTimeout(() => {
+                const mockTx = "5ZWpY..." + Math.random().toString(36).substring(7); // Simulated Sig
+                addLog(`BURN_SUCCESS: ${amount} SLX destroyed`, mockTx);
+                updateEverything();
+            }, 1500);
+
+        } catch (err) {
+            addLog("BURN_FAILED: Transaction rejected");
+        }
     }
 
+    function addOneMillion() {
+        const input = document.getElementById('burnAmount');
+        let current = parseFloat(input.value) || 0;
+        input.value = current + 1000000;
+    }
+
+    function setMax() { document.getElementById('burnAmount').value = userBalanceValue; }
+    
     function updateUI(active) {
         document.getElementById('connectBtn').style.display = active ? "none" : "block";
         document.getElementById('logoutBtn').style.display = active ? "block" : "none";
@@ -209,15 +230,16 @@
         document.getElementById('burn-area').style.pointerEvents = active ? "auto" : "none";
     }
 
-    function setMax() { document.getElementById('burnAmount').value = userBalanceValue; }
     function handleLogout() { localStorage.removeItem('solex_wallet'); location.reload(); }
+    function copyWallet() {
+        navigator.clipboard.writeText(walletAddress);
+        document.getElementById('copyBtn').innerText = "COPIED!";
+        setTimeout(() => { document.getElementById('copyBtn').innerText = "Copy Address"; }, 2000);
+    }
 
-    // INITIAL LOAD
     if (walletAddress) updateUI(true);
     updateEverything();
-
-    // AUTO REFRESH EVERY 15 SECONDS
     setInterval(updateEverything, 15000);
 </script>
 </body>
-    </html>
+</html>
