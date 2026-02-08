@@ -1,387 +1,239 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Bronin Token 🚀</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BRONIN Token | Official</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #00ffa3; /* Solana Green */
+            --secondary: #dc1fff; /* Solana Purple */
+            --bg: #0b0b0e;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --text: #ffffff;
+        }
 
-<script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-<style>
-:root{
-  --primary:#ff4d4d;
-  --green:#16c784;
-  --red:#ff4d4d;
-  --card-dark:#1a1a2e;
-  --text-light:#eee;
-  --bg-dark:#0b0b1a;
-  --wallet-text:#e0d4ff; /* whitish violet */
-  --wallet-glow:#d8bfff;
-}
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(0, 255, 163, 0.05) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(220, 31, 255, 0.05) 0%, transparent 20%);
+            color: var(--text);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
 
-body{
-  margin:0;
-  font-family:Arial, Helvetica, sans-serif;
-  background:var(--bg-dark);
-  color:var(--text-light);
-  overflow:hidden;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  height:100vh;
-  flex-direction:column;
-  text-align:center;
-}
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            text-align: center;
+        }
 
-#stars{
-  position:fixed;
-  top:0; left:0;
-  width:100%;
-  height:100%;
-  pointer-events:none;
-  z-index:0;
-}
+        /* Header / Logo Section */
+        header {
+            margin-bottom: 50px;
+        }
 
-.wrapper{
-  padding:20px;
-  max-width:600px;
-  margin:auto;
-  position:relative;
-  z-index:2;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-}
+        h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 4rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: -2px;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
 
-h1{
-  font-size:2.7rem;
-  margin-bottom:5px;
-  animation:pulse 1.5s infinite alternate;
-  text-shadow:0 0 10px var(--red),0 0 20px var(--red),0 0 30px var(--green);
-}
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.8;
+            color: #a0a0a0;
+        }
 
-@keyframes pulse{
-  0%{transform:scale(1);}
-  50%{transform:scale(1.08);}
-  100%{transform:scale(1);}
-}
+        /* Stats Grid */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
 
-.tagline{
-  opacity:.7;
-  margin-bottom:20px;
-  text-shadow:0 0 5px var(--green);
-}
+        .stat-card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            transition: transform 0.3s ease;
+        }
 
-.card{
-  background:var(--card-dark);
-  border-radius:16px;
-  padding:18px;
-  margin:12px;
-  box-shadow:0 0 20px var(--green);
-  transition: all 0.3s ease;
-  width:100%;
-}
+        .stat-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+        }
 
-.flex{
-  display:flex;
-  flex-wrap:wrap;
-  justify-content:center;
-  gap:10px;
-}
+        .stat-label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            color: #888;
+            margin-bottom: 5px;
+        }
 
-.stat{
-  font-weight:bold;
-  margin:6px 0;
-  font-size:1.2rem;
-}
+        .stat-value {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
 
-.wallet-btn{
-  padding:12px 22px;
-  border:none;
-  border-radius:40px;
-  font-weight:bold;
-  cursor:pointer;
-  margin:6px;
-  transition:.2s;
-  color: var(--wallet-text);
-  background: rgba(72,50,150,0.7);
-  text-shadow:0 0 5px var(--wallet-glow),0 0 10px var(--wallet-glow);
-}
+        /* Buttons */
+        .cta-group {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+            margin-bottom: 40px;
+        }
 
-.wallet-btn:hover{ transform:scale(1.08); }
+        .btn {
+            padding: 16px 32px;
+            border-radius: 12px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+            width: 100%;
+            max-width: 300px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1rem;
+        }
 
-.buy{ background:var(--green); color:white; text-shadow:0 0 10px var(--green);}
-.disconnect{ background:var(--red); color:white; text-shadow:0 0 10px var(--red);}
+        .btn-primary {
+            background: var(--primary);
+            color: #000;
+        }
 
-.address{
-  font-size:1rem;
-  font-weight:bold;
-  color: var(--wallet-text);
-  text-shadow:0 0 5px var(--wallet-glow),0 0 10px var(--wallet-glow);
-  word-break:break-all;
-}
+        .btn-primary:hover {
+            box-shadow: 0 0 20px rgba(0, 255, 163, 0.4);
+            transform: scale(1.02);
+        }
 
-.small{
-  font-size:.85rem;
-  opacity:.7;
-}
+        .btn-phantom {
+            background: #ab9ff2;
+            color: #000;
+        }
 
-.loader{
-  border:6px solid #222;
-  border-top:6px solid var(--wallet-glow);
-  border-radius:50%;
-  width:32px;
-  height:32px;
-  animation:spin 1s linear infinite;
-  margin:10px auto;
-}
+        /* Wallet Section */
+        .wallet-info {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 20px;
+            padding: 30px;
+            margin-top: 30px;
+            border: 1px dashed rgba(255, 255, 255, 0.2);
+        }
 
-@keyframes spin{
-  0%{transform:rotate(0deg);}
-  100%{transform:rotate(360deg);}
-}
+        .balance-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
 
-.balance-glow{
-  color:var(--red);
-  font-size:1.3rem;
-  font-weight:bold;
-  text-shadow:0 0 10px var(--red),0 0 20px var(--green),0 0 30px var(--red);
-  animation: glowPulse 2s infinite alternate;
-}
+        .balance-row:last-child { border: none; }
 
-@keyframes glowPulse{
-  0%{ text-shadow:0 0 10px var(--red),0 0 20px var(--green);}
-  50%{ text-shadow:0 0 25px var(--red),0 0 50px var(--green);}
-  100%{ text-shadow:0 0 10px var(--red),0 0 20px var(--green);}
-}
+        /* Socials */
+        .social-link {
+            color: var(--text);
+            text-decoration: none;
+            font-size: 1.5rem;
+            opacity: 0.6;
+            transition: 0.3s;
+        }
 
-.balance-glow-wallet {
-  color: var(--wallet-text);
-  font-weight:bold;
-  font-size:1.3rem;
-  text-shadow:0 0 10px var(--wallet-glow),0 0 20px var(--wallet-glow),0 0 30px #e6ccff;
-  animation: glowPulseWallet 2s infinite alternate;
-}
+        .social-link:hover {
+            opacity: 1;
+            color: var(--primary);
+        }
 
-@keyframes glowPulseWallet {
-  0%{ text-shadow:0 0 10px var(--wallet-glow),0 0 20px var(--wallet-glow);}
-  50%{ text-shadow:0 0 25px #e6ccff,0 0 50px var(--wallet-glow);}
-  100%{ text-shadow:0 0 10px var(--wallet-glow),0 0 20px #e6ccff;}
-}
+        footer {
+            margin-top: 60px;
+            font-size: 0.9rem;
+            color: #666;
+        }
 
-#walletInfo hr {
-  border-color: #c4a3ff44;
-}
-
-#socialX{
-  position:fixed;
-  bottom:12px;
-  left:50%;
-  transform:translateX(-50%);
-  z-index:10;
-  background:#0ff11a1a;
-  padding:8px 16px;
-  border-radius:12px;
-  font-weight:bold;
-  font-size:1.5rem;
-  text-decoration:none;
-  color:#0ff;
-  text-shadow:0 0 5px #0ff,0 0 10px #0ff;
-  transition:.3s;
-}
-#socialX:hover{
-  transform:translateX(-50%) scale(1.2);
-  background:#0ff22aa0;
-  text-shadow:0 0 15px #0ff,0 0 30px #0ff;
-}
-
-.footer{
-  margin-top:20px;
-  padding:20px;
-  font-size:.9rem;
-  opacity:.7;
-  text-shadow:0 0 5px var(--green);
-}
-</style>
+        @media (max-width: 600px) {
+            h1 { font-size: 2.5rem; }
+        }
+    </style>
 </head>
 <body>
 
-<canvas id="stars"></canvas>
+<div class="container">
+    <header>
+        <h1>BRONIN</h1>
+        <p class="subtitle">We are Bro's. We are BRONIN!</p>
+    </header>
 
-<div class="wrapper">
+    <div class="stats-container">
+        <div class="stat-card">
+            <div class="stat-label">Price</div>
+            <div class="stat-value">$0.0000</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">FDV</div>
+            <div class="stat-value">$0</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Bro-lders</div>
+            <div class="stat-value">0</div>
+        </div>
+    </div>
 
-<h1>BRO's!</h1>
-<div class="tagline">We are Bro's. We are BRONIN!</div>
+    <div class="cta-group">
+        <a href="https://pump.fun" class="btn btn-primary">🔥 BUY ON PUMP.FUN</a>
+        <button class="btn btn-phantom" onclick="connectWallet()">CONNECT PHANTOM</button>
+    </div>
 
-<div class="flex">
-  <div class="card" style="min-width:250px;">
-    <div class="stat">Price</div>
-    $<span id="price" class="balance-glow">0</span>
-  </div>
+    <div class="wallet-info">
+        <div class="balance-row">
+            <span>SOL Balance</span>
+            <strong>0.00</strong>
+        </div>
+        <div class="balance-row">
+            <span>BRN Balance</span>
+            <strong>0.00</strong>
+        </div>
+        <div class="balance-row">
+            <span>Total Value</span>
+            <span style="color: var(--primary);">$0.00</span>
+        </div>
+    </div>
 
-  <div class="card" style="min-width:250px;">
-    <div class="stat">FDV</div>
-    $<span id="marketcap" class="balance-glow">0</span>
-  </div>
-
-  <div class="card" style="min-width:250px;">
-    <div class="stat">BRO-lders</div>
-    <span id="holders" class="balance-glow">0</span>
-  </div>
+    <footer>
+        <div style="margin-bottom: 20px;">
+            <a href="https://x.com/Only_BRONin" class="social-link" target="_blank">𝕏</a>
+        </div>
+        <p>© 2026 Bronin Token • Buy Responsibly 😎</p>
+    </footer>
 </div>
-
-<div class="card">
-  <button class="wallet-btn buy" id="buyBtn">Buy on Pump.Fun</button>
-</div>
-
-<div class="card">
-  <button id="connectBtn" class="wallet-btn">Connect Phantom</button>
-  <button id="disconnectBtn" class="wallet-btn disconnect" style="display:none;">Disconnect</button>
-
-  <div id="spinner" style="display:none;">
-    <div class="loader"></div>
-  </div>
-
-  <div id="walletInfo" style="display:none;margin-top:10px;">
-    <div class="small">Connected</div>
-    <div id="walletAddress" class="address"></div>
-    <hr>
-    <div>SOL: <strong id="solBalance" class="balance-glow-wallet">0</strong></div>
-    <div>BRN: <strong id="tokenBalance" class="balance-glow-wallet">0</strong></div>
-    <div>Value: $<strong id="usdValue" class="balance-glow-wallet">0</strong></div>
-  </div>
-</div>
-
-<footer>
-© 2026 Bronin Token • Buy Responsibly 😎
-</footer>
-
-<a id="socialX" href="https://x.com/Only_BRONin" target="_blank">X</a>
 
 <script>
-const TOKEN_MINT = "J4Db1dSx5qkhghjbzNXarMyQ2KirijJGGFb9h9jzpump"; 
-const PUMP_FUN = "https://pump.fun/coin/J4Db1dSx5qkhghjbzNXarMyQ2KirijJGGFb9h9jzpump"; 
-let lastPrice = 0, lastFDV = 0, lastHolders = 0;
-const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl("mainnet-beta"), "confirmed");
-
-const connectBtn = document.getElementById("connectBtn");
-const disconnectBtn = document.getElementById("disconnectBtn");
-const walletInfo = document.getElementById("walletInfo");
-const walletAddress = document.getElementById("walletAddress");
-const solBalance = document.getElementById("solBalance");
-const tokenBalance = document.getElementById("tokenBalance");
-const usdValue = document.getElementById("usdValue");
-
-let provider, publicKey, disconnectTimeout;
-document.getElementById("buyBtn").onclick = () => window.open(PUMP_FUN,"_blank");
-
-function shortenAddress(a){ return a.slice(0,4)+"..."+a.slice(-4); }
-function resetDisconnectTimer(){ if(disconnectTimeout) clearTimeout(disconnectTimeout); disconnectTimeout=setTimeout(disconnectWallet,120000); }
-
-async function connectWallet(){
-  if(!(window.solana && window.solana.isPhantom)){ alert("Install Phantom!"); return; }
-  provider=window.solana;
-  document.getElementById("spinner").style.display="block";
-  try{
-    const resp=await provider.connect();
-    publicKey=resp.publicKey;
-    updateUIConnected();
-    confetti({particleCount:120,spread:80,origin:{y:0.6}});
-    getBalances();
-    resetDisconnectTimer();
-  }catch(e){}
-  document.getElementById("spinner").style.display="none";
-}
-
-connectBtn.onclick = connectWallet;
-
-function updateUIConnected(){
-  connectBtn.style.display="none";
-  disconnectBtn.style.display="inline-block";
-  walletInfo.style.display="block";
-  walletAddress.innerText = shortenAddress(publicKey.toString());
-}
-
-async function disconnectWallet(){
-  if(provider) await provider.disconnect();
-  publicKey=null;
-  connectBtn.style.display="inline-block";
-  disconnectBtn.style.display="none";
-  walletInfo.style.display="none";
-}
-
-disconnectBtn.onclick = disconnectWallet;
-
-async function autoConnect(){
-  if(window.solana && window.solana.isPhantom){
-    provider=window.solana;
-    try{
-      const r=await provider.connect({onlyIfTrusted:true});
-      if(r.publicKey){ publicKey=r.publicKey; updateUIConnected(); getBalances(); resetDisconnectTimer(); }
-    }catch{}
-  }
-}
-window.addEventListener("load", autoConnect);
-
-async function getBalances(){
-  if(!publicKey) return;
-  const balance=await connection.getBalance(publicKey);
-  solBalance.innerText=(balance/solanaWeb3.LAMPORTS_PER_SOL).toFixed(4);
-  const tokenAccounts=await connection.getParsedTokenAccountsByOwner(publicKey,{mint:new solanaWeb3.PublicKey(TOKEN_MINT)});
-  let tokenAmount=0;
-  if(tokenAccounts.value.length>0) tokenAmount=tokenAccounts.value[0].account.data.parsed.info.tokenAmount.uiAmount;
-  tokenBalance.innerText=tokenAmount??0;
-  usdValue.innerText=((tokenAmount||0)*lastPrice).toFixed(2);
-}
-
-async function fetchTokenData(){
-  try{
-    const res=await fetch(`https://api.dexscreener.com/latest/dex/tokens/${TOKEN_MINT}`);
-    const data=await res.json();
-    const pair=data.pairs[0];
-    let newPrice=parseFloat(pair.priceUsd)||0;
-    let newFDV=parseFloat(pair.fdv)||0;
-    let newHolders=pair.holders||0;
-
-    if(newPrice!==lastPrice){ price.classList.add("neonFlash"); setTimeout(()=>price.classList.remove("neonFlash"),500);}
-    if(newFDV!==lastFDV){ marketcap.classList.add("neonFlash"); setTimeout(()=>marketcap.classList.remove("neonFlash"),500);}
-    if(newHolders!==lastHolders){ holders.classList.add("neonFlash"); setTimeout(()=>holders.classList.remove("neonFlash"),500);}
-
-    lastPrice=newPrice; lastFDV=newFDV; lastHolders=newHolders;
-    price.innerText=lastPrice.toFixed(6);
-    marketcap.innerText=lastFDV.toLocaleString();
-    holders.innerText=lastHolders.toLocaleString();
-    if(publicKey) getBalances();
-  }catch{ price.innerText="N/A"; marketcap.innerText="N/A"; holders.innerText="N/A"; }
-}
-setInterval(fetchTokenData,15000);
-fetchTokenData();
-
-const canvas=document.getElementById("stars");
-const ctx=canvas.getContext("2d");
-canvas.width=window.innerWidth;
-canvas.height=window.innerHeight;
-let stars=[];
-for(let i=0;i<150;i++){ stars.push({x:Math.random()*canvas.width, y:Math.random()*canvas.height, r:Math.random()*1.5+0.5, dx:(Math.random()-0.5)/2, dy:(Math.random()-0.5)/2}); }
-function animateStars(){
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-  stars.forEach(s=>{
-    ctx.beginPath();
-    ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
-    ctx.fillStyle="cyan";
-    ctx.fill();
-    s.x+=s.dx; s.y+=s.dy;
-    if(s.x<0)s.x=canvas.width;
-    if(s.x>canvas.width)s.x=0;
-    if(s.y<0)s.y=canvas.height;
-    if(s.y>canvas.height)s.y=0;
-  });
-  requestAnimationFrame(animateStars);
-}
-animateStars();
-
-setInterval(()=>{ if(provider && provider.isConnected===false) disconnectWallet(); },3000);
+    // Placeholder for your wallet logic
+    function connectWallet() {
+        alert("Connecting to Phantom...");
+    }
 </script>
 
 </body>
