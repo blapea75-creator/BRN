@@ -87,9 +87,9 @@
             <p class="description">The hyper-deflationary terminal for the Solana ecosystem.</p>
             
             <div class="stats-grid">
-                <div class="stat-box"><div class="stat-label">Price</div><div class="stat-val">$0.000021</div></div>
-                <div class="stat-box"><div class="stat-label">FDV</div><div class="stat-val">$21,400</div></div>
-                <div class="stat-box"><div class="stat-label">Total Burned</div><div class="stat-val" style="color:var(--burn-red)">14.2M</div></div>
+                <div class="stat-box"><div class="stat-label">Price</div><div id="tokenPrice" class="stat-val">Syncing...</div></div>
+                <div class="stat-box"><div class="stat-label">FDV</div><div id="tokenFDV" class="stat-val">Syncing...</div></div>
+                <div class="stat-box"><div class="stat-label">Total Burned</div><div id="tokenBurned" class="stat-val" style="color:var(--burn-red)">Syncing...</div></div>
             </div>
 
             <div class="btn-group">
@@ -129,6 +129,7 @@
     VANTA.NET({ el: "#vanta-canvas", mouseControls: true, color: 0x00ffa3, backgroundColor: 0x0b0b0e, points: 8 });
     
     const MINT_ADDRESS = "J4Db1dSx5qkhghjbzNXarMyQ2KirijJGGFb9h9jzpump";
+    const INITIAL_SUPPLY = 1000000000; 
     let walletAddress = localStorage.getItem('solex_wallet');
     let userBalanceValue = 0;
     const connection = new solanaWeb3.Connection("https://api.mainnet-beta.solana.com");
@@ -140,50 +141,63 @@
         div.innerHTML = `> ${msg}`;
         container.appendChild(div);
         container.scrollTop = container.scrollHeight;
+        if(container.children.length > 20) container.removeChild(container.firstChild);
+    }
+
+    async function updateEverything() {
+        addLog("SYNCING_NETWORK_DATA...");
+        try {
+            // 1. Fetch Token Data (Price/FDV)
+            const dexResp = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${MINT_ADDRESS}`);
+            const dexData = await dexResp.json();
+            if (dexData.pairs && dexData.pairs.length > 0) {
+                const pair = dexData.pairs[0];
+                document.getElementById('tokenPrice').innerText = `$${parseFloat(pair.priceUsd).toFixed(8)}`;
+                document.getElementById('tokenFDV').innerText = `$${parseInt(pair.fdv).toLocaleString()}`;
+            }
+
+            // 2. Fetch Burn Stats
+            const supplyResp = await connection.getTokenSupply(new solanaWeb3.PublicKey(MINT_ADDRESS));
+            const currentSupply = supplyResp.value.uiAmount;
+            const burned = INITIAL_SUPPLY - currentSupply;
+            document.getElementById('tokenBurned').innerText = `${(burned / 1000000).toFixed(1)}M`;
+
+            // 3. Fetch Wallet Balance (if connected)
+            if (walletAddress) {
+                const pubKey = new solanaWeb3.PublicKey(walletAddress);
+                const tokenAccounts = await connection.getParsedTokenAccountsByOwner(pubKey, {
+                    mint: new solanaWeb3.PublicKey(MINT_ADDRESS)
+                });
+                userBalanceValue = tokenAccounts.value.length > 0 ? tokenAccounts.value[0].account.data.parsed.info.tokenAmount.uiAmount : 0;
+                document.getElementById('userBalance').innerText = `${userBalanceValue.toLocaleString()} SLX`;
+            }
+        } catch (e) {
+            addLog("SYNC_INTERRUPTED_RETRYING...");
+        }
     }
 
     async function handleAuth() {
         const provider = window.phantom?.solana;
         if (!provider) return window.open("https://phantom.app/", "_blank");
         try {
-            addLog("AUTH: REQUESTING_SIGNATURE...");
             const resp = await provider.connect();
             const pubKey = resp.publicKey.toString();
-
-            const message = `SOL EX TERMINAL VERIFICATION\n\nSign to verify ownership of: ${pubKey}\nTerminal Instance: ${Date.now()}`;
-            const encodedMessage = new TextEncoder().encode(message);
-            await provider.signMessage(encodedMessage, "utf8");
-
+            const message = `SOL EX TERMINAL VERIFICATION\n\nSign to verify: ${pubKey}\nTS: ${Date.now()}`;
+            await provider.signMessage(new TextEncoder().encode(message), "utf8");
             walletAddress = pubKey;
             localStorage.setItem('solex_wallet', walletAddress);
-            addLog("AUTH: SUCCESSFUL");
             updateUI(true);
-            fetchLiveBalance();
-        } catch (e) { addLog("AUTH: PERMISSION_REFUSED"); }
-    }
-
-    async function fetchLiveBalance() {
-        if (!walletAddress) return;
-        try {
-            const pubKey = new solanaWeb3.PublicKey(walletAddress);
-            const tokenAccounts = await connection.getParsedTokenAccountsByOwner(pubKey, {
-                mint: new solanaWeb3.PublicKey(MINT_ADDRESS)
-            });
-            if (tokenAccounts.value.length > 0) {
-                userBalanceValue = tokenAccounts.value[0].account.data.parsed.info.tokenAmount.uiAmount;
-            }
-            document.getElementById('userBalance').innerText = `${userBalanceValue.toLocaleString()} SLX`;
-        } catch (e) { addLog("SYNC: BALANCE_OFFLINE"); }
+            updateEverything();
+            addLog("AUTH_SUCCESS");
+        } catch (e) { addLog("AUTH_FAILED"); }
     }
 
     function copyWallet() {
         if (!walletAddress) return;
         navigator.clipboard.writeText(walletAddress);
         const btn = document.getElementById('copyBtn');
-        const oldText = btn.innerText;
         btn.innerText = "COPIED!";
-        addLog("SYSTEM: ADDR_COPIED");
-        setTimeout(() => { btn.innerText = oldText; }, 2000);
+        setTimeout(() => { btn.innerText = "Copy Address"; }, 2000);
     }
 
     function updateUI(active) {
@@ -195,17 +209,16 @@
         document.getElementById('burn-area').style.pointerEvents = active ? "auto" : "none";
     }
 
-    function setMax() {
-        document.getElementById('burnAmount').value = userBalanceValue;
-        addLog("UI: MAX_VALUE_LOADED");
-    }
+    function setMax() { document.getElementById('burnAmount').value = userBalanceValue; }
+    function handleLogout() { localStorage.removeItem('solex_wallet'); location.reload(); }
 
-    function handleLogout() {
-        localStorage.removeItem('solex_wallet');
-        location.reload();
-    }
+    // INITIAL LOAD
+    if (walletAddress) updateUI(true);
+    updateEverything();
 
-    if (walletAddress) { updateUI(true); fetchLiveBalance(); addLog("SESSION: ACTIVE"); }
+    // AUTO REFRESH EVERY 15 SECONDS
+    setInterval(updateEverything, 15000);
 </script>
 </body>
-</html>
+    </html>
+    
