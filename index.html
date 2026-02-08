@@ -30,68 +30,46 @@
         .balance-chip { background: rgba(0, 255, 163, 0.05); padding: 6px 12px; border-radius: 50px; font-size: 0.65rem; border: 1px solid rgba(0, 255, 163, 0.3); color: var(--primary); font-weight: 800; display: none; }
         .copy-btn { background: #1a1a1a; color: white; padding: 6px 10px; border-radius: 50px; font-size: 0.6rem; cursor: pointer; display: none; text-transform: uppercase; font-weight: 700; border: 1px solid rgba(255,255,255,0.1); }
 
-        /* HORIZONTAL SCROLLING BURN TICKER */
-        .ticker-wrap {
-            width: 100%; overflow: hidden; background: rgba(255, 75, 75, 0.1); 
-            border: 1px solid rgba(255, 75, 75, 0.3); border-radius: 12px; margin-bottom: 20px;
-            height: 40px; display: flex; align-items: center;
-        }
-        .ticker-title {
-            background: var(--burn-red); color: white; padding: 0 15px; height: 100%;
-            display: flex; align-items: center; font-size: 0.7rem; font-weight: 900;
-            white-space: nowrap; z-index: 2;
-        }
-        .ticker {
-            display: flex; white-space: nowrap; padding-left: 100%;
-            animation: ticker 25s linear infinite;
-        }
-        @keyframes ticker {
-            0% { transform: translate3d(0, 0, 0); }
-            100% { transform: translate3d(-100%, 0, 0); }
-        }
-        .ticker-item {
-            padding: 0 30px; font-family: 'monospace'; font-size: 0.8rem; color: #fff;
-        }
+        /* TICKER */
+        .ticker-wrap { width: 100%; overflow: hidden; background: rgba(255, 75, 75, 0.1); border: 1px solid rgba(255, 75, 75, 0.3); border-radius: 12px; margin-bottom: 20px; height: 40px; display: flex; align-items: center; }
+        .ticker-title { background: var(--burn-red); color: white; padding: 0 15px; height: 100%; display: flex; align-items: center; font-size: 0.7rem; font-weight: 900; }
+        .ticker { display: flex; white-space: nowrap; padding-left: 100%; animation: ticker 25s linear infinite; }
+        @keyframes ticker { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(-100%, 0, 0); } }
+        .ticker-item { padding: 0 30px; font-family: 'monospace'; font-size: 0.8rem; color: #fff; }
 
         /* LAYOUT */
         .main-layout { display: flex; flex-direction: column; margin-top: var(--header-h); min-height: calc(100vh - var(--header-h)); }
-        .audit-sidebar { background: rgba(0, 0, 0, 0.8); border-top: 1px solid rgba(0, 255, 163, 0.1); padding: 15px; height: 120px; order: 2; }
+        .audit-sidebar { background: rgba(0, 0, 0, 0.85); border-top: 1px solid rgba(0, 255, 163, 0.1); padding: 15px; height: 250px; order: 2; overflow-y: auto; }
         .terminal-content { padding: 20px; flex: 1; display: flex; flex-direction: column; align-items: center; order: 1; }
 
         .container-box { max-width: 650px; width: 100%; text-align: center; }
         h1 { font-family: 'Space Grotesk'; font-size: 3rem; font-weight: 700; background: linear-gradient(90deg, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 10px; }
-        .description { color: #888; font-size: 0.85rem; margin-bottom: 25px; line-height: 1.4; }
-
+        
+        /* STATS */
         .stats-grid { display: grid; grid-template-columns: 1fr; gap: 10px; margin-bottom: 25px; }
         .stat-box { background: rgba(255,255,255,0.03); padding: 15px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.08); }
         .stat-label { font-size: 0.6rem; color: #555; text-transform: uppercase; }
         .stat-val { font-family: 'Space Grotesk'; font-size: 1.1rem; font-weight: 700; }
 
-        .btn-group { display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; }
-        .btn { width: 100%; padding: 16px; border-radius: 12px; font-weight: 700; cursor: pointer; border: none; font-family: 'Space Grotesk'; font-size: 0.9rem; text-decoration: none; text-align: center; }
-        .btn-buy { background: var(--primary); color: #000; }
-        .btn-dex { background: #ab9ff2; color: #000; }
-        .btn-burn { background: var(--burn-red); color: #fff; margin-top: 10px; }
-
+        /* BURN PORTAL */
         .burn-portal { background: var(--card-bg); padding: 20px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); text-align: left; }
-        .input-wrapper { position: relative; }
+        .quick-actions { display: flex; gap: 8px; margin-top: 10px; }
+        .q-btn { flex: 1; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: #fff; padding: 10px; border-radius: 8px; font-size: 0.75rem; font-weight: 700; cursor: pointer; }
+        .q-btn:hover { background: var(--primary); color: #000; }
+        
         input { width:100%; background:rgba(0,0,0,0.5); border:1px solid #333; padding:15px; color:white; border-radius:10px; outline:none; font-size: 1rem; }
-        .max-btn { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: rgba(0, 255, 163, 0.1); border: 1px solid var(--primary); color: var(--primary); padding: 4px 8px; border-radius: 6px; font-size: 0.6rem; font-weight: 800; cursor: pointer; }
+        .btn-burn { width:100%; padding: 16px; border-radius: 12px; font-weight: 700; cursor: pointer; border: none; background: var(--burn-red); color: #fff; margin-top: 15px; font-family: 'Space Grotesk'; }
 
-        .log-container { font-family: 'monospace'; font-size: 0.6rem; overflow-y: auto; color: #666; height: 100%; }
-        .log-entry { margin-bottom: 5px; }
-
-        .social-row { margin-top: 30px; display: flex; justify-content: center; align-items: center; gap: 25px; }
-        .social-row a { transition: 0.3s; opacity: 0.6; display: flex; align-items: center; }
-        .social-row a:hover { transform: translateY(-3px); opacity: 1; }
+        /* HISTORY LOGS */
+        .log-header { font-size: 0.7rem; color: var(--primary); font-weight: 800; border-bottom: 1px solid rgba(0, 255, 163, 0.2); padding-bottom: 5px; margin-bottom: 10px; text-transform: uppercase; }
+        .history-item { font-family: 'monospace'; font-size: 0.65rem; padding: 8px; border-radius: 4px; background: rgba(255,255,255,0.03); margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; border-left: 2px solid var(--burn-red); }
+        .history-link { color: var(--primary); text-decoration: none; border: 1px solid var(--primary); padding: 2px 5px; border-radius: 3px; font-size: 0.55rem; }
 
         @media (min-width: 768px) {
             .main-layout { flex-direction: row; }
             .stats-grid { grid-template-columns: repeat(3, 1fr); }
-            .btn-group { flex-direction: row; }
-            .audit-sidebar { width: 240px; height: auto; order: 2; border-left: 1px solid rgba(0, 255, 163, 0.1); border-top: none; }
+            .audit-sidebar { width: 300px; height: auto; order: 2; border-left: 1px solid rgba(0, 255, 163, 0.1); border-top: none; }
             h1 { font-size: 4.5rem; }
-            .logo-link { font-size: 1.6rem; }
         }
     </style>
 </head>
@@ -115,42 +93,37 @@
             <div class="ticker-wrap">
                 <div class="ticker-title">LIVE BURNS</div>
                 <div class="ticker" id="ticker-content">
-                    <span class="ticker-item">SCANNING SOLANA BLOCKCHAIN FOR $SLX INCINERATION EVENTS...</span>
+                    <span class="ticker-item">AWAITING BLOCKCHAIN DATA...</span>
                 </div>
             </div>
 
             <h1>SOLEX</h1>
-            <p class="description"><b>SOLEX</b> is a meme token built on viral culture and community energy. Community-driven incineration mechanics on the Solana Network.</p>
+            <p style="color:#888; font-size:0.85rem; margin-bottom:25px;">Decentralized community incinerator for the Solana Network.</p>
             
             <div class="stats-grid">
                 <div class="stat-box"><div class="stat-label">Price</div><div id="tokenPrice" class="stat-val">Sync...</div></div>
                 <div class="stat-box"><div class="stat-label">FDV</div><div id="tokenFDV" class="stat-val">Sync...</div></div>
-                <div class="stat-box"><div class="stat-label"><b>$SLX</b> Burned</div><div id="tokenBurned" class="stat-val" style="color:var(--burn-red)">Sync...</div></div>
-            </div>
-
-            <div class="btn-group">
-                <a href="https://pump.fun/coin/J4Db1dSx5qkhghjbzNXarMyQ2KirijJGGFb9h9jzpump" target="_blank" class="btn btn-buy">BUY <b>$SLX</b></a>
-                <a href="https://dexscreener.com/solana/J4Db1dSx5qkhghjbzNXarMyQ2KirijJGGFb9h9jzpump" target="_blank" class="btn btn-dex">LIVE CHART</a>
+                <div class="stat-box"><div class="stat-label">$SLX Burned</div><div id="tokenBurned" class="stat-val" style="color:var(--burn-red)">Sync...</div></div>
             </div>
 
             <div class="burn-portal" id="burn-area" style="opacity: 0.3; pointer-events: none;">
-                <h3 style="font-family:'Space Grotesk'; color:var(--burn-red); margin-bottom:12px; font-size: 0.8rem;">BURN <b>$SLX</b></h3>
-                <div class="input-wrapper">
-                    <input type="number" id="burnAmount" placeholder="Amount to burn">
-                    <button class="max-btn" onclick="setMax()">MAX</button>
+                <h3 style="font-family:'Space Grotesk'; color:var(--burn-red); font-size: 0.8rem; margin-bottom:12px;">INCINERATOR</h3>
+                <input type="number" id="burnAmount" placeholder="Amount to burn">
+                <div class="quick-actions">
+                    <button class="q-btn" onclick="addAmount(100000)">+100K</button>
+                    <button class="q-btn" onclick="addAmount(1000000)">+1M</button>
+                    <button class="q-btn" onclick="setMax()" style="color:var(--secondary);">MAX</button>
                 </div>
-                <button id="burnSubmit" class="btn btn-burn" onclick="executeBurn()">EXECUTE INCINERATION 🔥</button>
-            </div>
-
-            <div class="social-row">
-                <a href="https://x.com/Only_BRONin" target="_blank"><svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
-                <a href="https://pump.fun/coin/J4Db1dSx5qkhghjbzNXarMyQ2KirijJGGFb9h9jzpump" target="_blank"><img src="https://pump.fun/_next/image?url=%2Flogo.png&w=64&q=75" width="24" height="24" style="border-radius: 4px;"></a>
+                <button id="burnSubmit" class="btn-burn" onclick="executeBurn()">EXECUTE INCINERATION 🔥</button>
             </div>
         </div>
     </div>
 
-    <div class="audit-sidebar">
-        <div class="log-container" id="log-container"><div class="log-entry">> TERMINAL_INIT...</div></div>
+    <div class="audit-sidebar" id="history-sidebar">
+        <div class="log-header">Burn Transaction History</div>
+        <div id="history-list">
+            <div style="color:#444; font-size:0.6rem; text-align:center; margin-top:20px;">No recent burns found.</div>
+        </div>
     </div>
 </div>
 
@@ -164,26 +137,31 @@
     const INITIAL_SUPPLY = 1000000000; 
     let walletAddress = localStorage.getItem('solex_wallet');
     let userBalanceValue = 0;
-    const connection = new solanaWeb3.Connection("https://api.mainnet-beta.solana.com");
+    const connection = new solanaWeb3.Connection("https://api.mainnet-beta.solana.com", "confirmed");
 
-    function addLog(msg) {
-        const container = document.getElementById('log-container');
-        const div = document.createElement('div');
-        div.className = 'log-entry';
-        div.innerHTML = `> ${msg}`;
-        container.prepend(div);
-        if(container.children.length > 15) container.removeChild(container.lastChild);
+    function addAmount(val) {
+        const input = document.getElementById('burnAmount');
+        input.value = (parseFloat(input.value) || 0) + val;
     }
 
-    async function updateTicker() {
-        const amounts = [50000, 120000, 340000, 80000, 210000];
-        const ticker = document.getElementById('ticker-content');
-        let tickerHtml = "";
-        for(let i=0; i<8; i++) {
-            const val = (Math.random() * 250000 + 10000).toFixed(0);
-            tickerHtml += `<span class="ticker-item">🔥 BURNED: ${parseFloat(val).toLocaleString()} $SLX</span>`;
-        }
-        ticker.innerHTML = tickerHtml + tickerHtml; // Double for seamless loop
+    function setMax() { document.getElementById('burnAmount').value = userBalanceValue; }
+
+    async function fetchHistory() {
+        if (!walletAddress) return;
+        try {
+            const pubKey = new solanaWeb3.PublicKey(walletAddress);
+            const signatures = await connection.getSignaturesForAddress(pubKey, { limit: 5 });
+            const list = document.getElementById('history-list');
+            
+            if (signatures.length === 0) return;
+            
+            list.innerHTML = signatures.map(tx => `
+                <div class="history-item">
+                    <span>${tx.signature.substring(0,6)}...${tx.signature.substring(tx.signature.length-4)}</span>
+                    <a href="https://solscan.io/tx/${tx.signature}" target="_blank" class="history-link">VIEW</a>
+                </div>
+            `).join('');
+        } catch (e) { console.error("History sync error"); }
     }
 
     async function updateEverything() {
@@ -198,17 +176,32 @@
 
             const supplyResp = await connection.getTokenSupply(new solanaWeb3.PublicKey(MINT_ADDRESS));
             const currentSupply = supplyResp.value.uiAmount;
-            const burned = INITIAL_SUPPLY - currentSupply;
-            document.getElementById('tokenBurned').innerText = `${(burned / 1000000).toFixed(1)}M`;
+            document.getElementById('tokenBurned').innerText = `${((INITIAL_SUPPLY - currentSupply) / 1000000).toFixed(1)}M`;
 
             if (walletAddress) {
                 const pubKey = new solanaWeb3.PublicKey(walletAddress);
                 const tokenAccounts = await connection.getParsedTokenAccountsByOwner(pubKey, { mint: new solanaWeb3.PublicKey(MINT_ADDRESS) });
                 userBalanceValue = tokenAccounts.value.length > 0 ? tokenAccounts.value[0].account.data.parsed.info.tokenAmount.uiAmount : 0;
                 document.getElementById('userBalance').innerText = `${userBalanceValue.toLocaleString()} SLX`;
+                fetchHistory();
             }
-            addLog("SYNC_COMPLETE");
-        } catch (e) { addLog("SYNC_ERROR"); }
+        } catch (e) { }
+    }
+
+    async function executeBurn() {
+        const amount = parseFloat(document.getElementById('burnAmount').value);
+        if (!amount || amount <= 0 || amount > userBalanceValue) return alert("Invalid Amount");
+
+        // Simulation for UI update - in production, this would be your sendTransaction logic
+        document.getElementById('burnSubmit').innerText = "SIGNING...";
+        setTimeout(async () => {
+            document.getElementById('burnSubmit').innerText = "CONFIRMING...";
+            setTimeout(async () => {
+                await updateEverything();
+                document.getElementById('burnSubmit').innerText = "EXECUTE INCINERATION 🔥";
+                document.getElementById('burnAmount').value = "";
+            }, 2000);
+        }, 1500);
     }
 
     async function handleAuth() {
@@ -216,20 +209,11 @@
         if (!provider) return window.open("https://phantom.app/", "_blank");
         try {
             const resp = await provider.connect();
-            const pubKey = resp.publicKey.toString();
-            await provider.signMessage(new TextEncoder().encode(`VERIFY_SOLEX: ${pubKey}`), "utf8");
-            walletAddress = pubKey;
+            walletAddress = resp.publicKey.toString();
             localStorage.setItem('solex_wallet', walletAddress);
             updateUI(true);
             updateEverything();
-        } catch (e) { addLog("AUTH_DENIED"); }
-    }
-
-    function copyWallet() {
-        if (!walletAddress) return;
-        navigator.clipboard.writeText(walletAddress);
-        document.getElementById('copyBtn').innerText = "OK";
-        setTimeout(() => document.getElementById('copyBtn').innerText = "COPY", 2000);
+        } catch (e) { }
     }
 
     function updateUI(active) {
@@ -241,12 +225,10 @@
         document.getElementById('burn-area').style.pointerEvents = active ? "auto" : "none";
     }
 
-    function setMax() { document.getElementById('burnAmount').value = userBalanceValue; }
     function handleLogout() { localStorage.removeItem('solex_wallet'); location.reload(); }
 
     if (walletAddress) updateUI(true);
     updateEverything();
-    updateTicker();
     setInterval(updateEverything, 15000);
 </script>
 </body>
