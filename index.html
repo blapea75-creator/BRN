@@ -123,7 +123,7 @@
             <button id="connectBtn" class="wallet-btn" onclick="handleFullAuth()">Connect & Verify</button>
             <button id="disconnectBtn" class="wallet-btn" onclick="handleDisconnect()">Logout</button>
         </div>
-        <div id="userBalance" class="balance-chip" onclick="copyUserWallet()" title="Click to copy address">0 SLX HELD</div>
+        <div id="userBalance" class="balance-chip" onclick="copyUserWallet()" title="Click to copy address">0 $SLX</div>
     </div>
 </div>
 
@@ -136,16 +136,16 @@
     <div class="stats-grid">
         <div class="stat-box"><label>Live Price (USD)</label><div class="val" id="stat-price">$0.00</div></div>
         <div class="stat-box"><label>Market Cap</label><div class="val" id="stat-fdv">$0</div></div>
-        <div class="stat-box"><label>Total Burned</label><div class="val" id="stat-burned" style="color:var(--burn-red)">0</div></div>
+        <div class="stat-box"><label>Burned $SLX</label><div class="val" id="stat-burned" style="color:var(--burn-red)">0</div></div>
     </div>
 
-    <a href="https://pump.fun/coin/J4Db1dSx5qkhghjbzNXarMyQ2KirijJGGFb9h9jzpump" target="_blank" class="btn btn-buy">🔥 BUY ON PUMP.FUN</a>
+    <a href="https://pump.fun/coin/J4Db1dSx5qkhghjbzNXarMyQ2KirijJGGFb9h9jzpump" target="_blank" class="btn btn-buy">BUY $SLX</a>
 
     <div class="burn-portal" id="burn-area" style="opacity: 0.4; pointer-events: none;">
         <h3 style="font-family: 'Space Grotesk';">Secure Burn Portal</h3>
         <div class="status-console" id="console-text">> Wallet authentication required...</div>
         <input type="number" id="burnAmount" style="width:100%; background:rgba(0,0,0,0.4); border:1px solid #444; padding:18px; color:white; border-radius:12px; margin-bottom:15px; outline: none; font-size: 1.2rem;" placeholder="Amount of SLX to burn">
-        <button id="burnBtn" class="btn btn-burn" onclick="executeSecureBurn()">SIGN & COMMIT BURN 🔥</button>
+        <button id="burnBtn" class="btn btn-burn" onclick="executeSecureBurn()">BURN $SLX</button>
     </div>
 
     <div class="history-panel">
@@ -311,3 +311,4 @@
 </script>
 </body>
 </html>
+
