@@ -35,7 +35,6 @@
         .main-layout { display: grid; grid-template-columns: 1fr 240px; height: calc(100vh - var(--header-h)); margin-top: var(--header-h); }
         .terminal-content { padding: 40px; overflow-y: auto; display: flex; flex-direction: column; align-items: center; }
 
-        /* CENTER CONTENT */
         .container-box { max-width: 650px; width: 100%; text-align: center; }
         h1 { font-family: 'Space Grotesk'; font-size: 4.5rem; font-weight: 700; background: linear-gradient(90deg, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 5px; }
         .description { color: #888; font-size: 0.9rem; margin-bottom: 30px; letter-spacing: 1px; }
@@ -51,18 +50,20 @@
         .btn-dex { background: #ab9ff2; color: #000; }
         .btn-burn { background: var(--burn-red); color: #fff; width: 100%; margin-top: 15px; }
 
-        /* BURN PORTAL */
         .burn-portal { background: var(--card-bg); padding: 30px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); text-align: left; margin-bottom: 25px; }
         .input-wrapper { position: relative; }
         input { width:100%; background:rgba(0,0,0,0.5); border:1px solid #333; padding:18px 70px 18px 15px; color:white; border-radius:12px; outline:none; font-family: 'monospace'; }
         .max-btn { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: rgba(0, 255, 163, 0.1); border: 1px solid var(--primary); color: var(--primary); padding: 5px 10px; border-radius: 6px; font-size: 0.7rem; font-weight: 800; cursor: pointer; transition: 0.2s; }
 
-        /* AUDIT LOG */
         .audit-sidebar { background: rgba(0, 0, 0, 0.6); border-left: 1px solid rgba(0, 255, 163, 0.1); padding: 15px; display: flex; flex-direction: column; backdrop-filter: blur(10px); }
         .log-container { flex-grow: 1; font-family: 'monospace'; font-size: 0.65rem; overflow-y: auto; color: #444; }
         .log-entry { margin-bottom: 8px; border-left: 1px solid #222; padding-left: 8px; }
 
-        #txModal { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.85); display: none; align-items: center; justify-content: center; z-index: 2000; }
+        .social-row { margin-top: 30px; display: flex; justify-content: center; align-items: center; gap: 25px; }
+        .social-row a { transition: 0.3s; display: flex; align-items: center; opacity: 0.6; }
+        .social-row a:hover { transform: translateY(-3px); opacity: 1; }
+        .social-row img { filter: grayscale(1) brightness(2); }
+        .social-row a:hover img { filter: none; }
     </style>
 </head>
 <body>
@@ -105,9 +106,12 @@
                 <button id="burnSubmit" class="btn btn-burn" onclick="executeBurn()">EXECUTE BURN 🔥</button>
             </div>
 
-            <div style="margin-top: 30px; display: flex; justify-content: center; gap: 20px;">
-                <a href="https://x.com/solexterminal" target="_blank">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="white" style="opacity:0.6;"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+            <div class="social-row">
+                <a href="https://x.com/Only_BRONin" target="_blank" title="Follow Official X">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                </a>
+                <a href="https://pump.fun/coin/J4Db1dSx5qkhghjbzNXarMyQ2KirijJGGFb9h9jzpump" target="_blank" title="View on Pump.fun">
+                    <img src="https://pump.fun/_next/image?url=%2Flogo.png&w=64&q=75" width="28" height="28" style="border-radius: 4px;">
                 </a>
             </div>
         </div>
@@ -141,26 +145,21 @@
     async function handleAuth() {
         const provider = window.phantom?.solana;
         if (!provider) return window.open("https://phantom.app/", "_blank");
-
         try {
-            addLog("REQUESTING_WALLET_PERMISSION...");
+            addLog("AUTH: REQUESTING_SIGNATURE...");
             const resp = await provider.connect();
             const pubKey = resp.publicKey.toString();
 
-            // Message signing for permission
-            const message = `Welcome to SolEx Terminal.\n\nVerify wallet ownership and permit burn access for: ${pubKey}\nTimestamp: ${Date.now()}`;
+            const message = `SOL EX TERMINAL VERIFICATION\n\nSign to verify ownership of: ${pubKey}\nTerminal Instance: ${Date.now()}`;
             const encodedMessage = new TextEncoder().encode(message);
             await provider.signMessage(encodedMessage, "utf8");
 
             walletAddress = pubKey;
             localStorage.setItem('solex_wallet', walletAddress);
-            addLog("PERMISSION_GRANTED");
+            addLog("AUTH: SUCCESSFUL");
             updateUI(true);
             fetchLiveBalance();
-        } catch (e) {
-            addLog("AUTH_DENIED_BY_USER");
-            console.error(e);
-        }
+        } catch (e) { addLog("AUTH: PERMISSION_REFUSED"); }
     }
 
     async function fetchLiveBalance() {
@@ -174,16 +173,17 @@
                 userBalanceValue = tokenAccounts.value[0].account.data.parsed.info.tokenAmount.uiAmount;
             }
             document.getElementById('userBalance').innerText = `${userBalanceValue.toLocaleString()} SLX`;
-        } catch (e) { addLog("BALANCE_SYNC_ERROR"); }
+        } catch (e) { addLog("SYNC: BALANCE_OFFLINE"); }
     }
 
     function copyWallet() {
         if (!walletAddress) return;
         navigator.clipboard.writeText(walletAddress);
-        const originalText = document.getElementById('copyBtn').innerText;
-        document.getElementById('copyBtn').innerText = "COPIED!";
-        addLog("ADDRESS_COPIED_TO_CLIPBOARD");
-        setTimeout(() => { document.getElementById('copyBtn').innerText = originalText; }, 2000);
+        const btn = document.getElementById('copyBtn');
+        const oldText = btn.innerText;
+        btn.innerText = "COPIED!";
+        addLog("SYSTEM: ADDR_COPIED");
+        setTimeout(() => { btn.innerText = oldText; }, 2000);
     }
 
     function updateUI(active) {
@@ -197,7 +197,7 @@
 
     function setMax() {
         document.getElementById('burnAmount').value = userBalanceValue;
-        addLog("UI: MAX_SELECTED");
+        addLog("UI: MAX_VALUE_LOADED");
     }
 
     function handleLogout() {
@@ -205,7 +205,7 @@
         location.reload();
     }
 
-    if (walletAddress) { updateUI(true); fetchLiveBalance(); addLog("SESSION_RESTORED"); }
+    if (walletAddress) { updateUI(true); fetchLiveBalance(); addLog("SESSION: ACTIVE"); }
 </script>
 </body>
 </html>
