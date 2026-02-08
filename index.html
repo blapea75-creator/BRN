@@ -5,63 +5,58 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BRONIN Token | Official</title>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    
     <style>
         :root {
-            --primary: #00ffa3; /* Solana Green */
-            --secondary: #dc1fff; /* Solana Purple */
+            --primary: #00ffa3; 
+            --secondary: #dc1fff;
             --bg: #0b0b0e;
-            --card-bg: rgba(255, 255, 255, 0.05);
+            --card-bg: rgba(0, 0, 0, 0.6);
             --text: #ffffff;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Inter', sans-serif;
             background-color: var(--bg);
-            background-image: 
-                radial-gradient(circle at 10% 20%, rgba(0, 255, 163, 0.05) 0%, transparent 20%),
-                radial-gradient(circle at 90% 80%, rgba(220, 31, 255, 0.05) 0%, transparent 20%);
             color: var(--text);
-            line-height: 1.6;
             overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* Vanta Background Container */
+        #vanta-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
         }
 
         .container {
             max-width: 800px;
             margin: 0 auto;
-            padding: 40px 20px;
+            padding: 60px 20px;
             text-align: center;
-        }
-
-        /* Header / Logo Section */
-        header {
-            margin-bottom: 50px;
+            position: relative;
+            z-index: 1;
         }
 
         h1 {
             font-family: 'Space Grotesk', sans-serif;
-            font-size: 4rem;
+            font-size: 5rem;
             font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: -2px;
-            margin-bottom: 10px;
             background: linear-gradient(90deg, var(--primary), var(--secondary));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+            filter: drop-shadow(0 0 10px rgba(0, 255, 163, 0.3));
         }
 
-        .subtitle {
-            font-size: 1.2rem;
-            opacity: 0.8;
-            color: #a0a0a0;
-        }
+        .subtitle { font-size: 1.2rem; color: #a0a0a0; margin-bottom: 40px; }
 
-        /* Stats Grid */
         .stats-container {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
@@ -74,35 +69,144 @@
             padding: 20px;
             border-radius: 16px;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            transition: transform 0.3s ease;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-5px);
-            border-color: var(--primary);
-        }
-
-        .stat-label {
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            color: #888;
-            margin-bottom: 5px;
+            backdrop-filter: blur(15px);
         }
 
         .stat-value {
             font-family: 'Space Grotesk', sans-serif;
             font-size: 1.5rem;
-            font-weight: 700;
             color: var(--primary);
+            font-weight: 700;
         }
 
-        /* Buttons */
-        .cta-group {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            align-items: center;
+        .btn {
+            display: inline-block;
+            padding: 18px 40px;
+            border-radius: 12px;
+            font-weight: 700;
+            text-decoration: none;
+            cursor: pointer;
+            border: none;
+            width: 100%;
+            max-width: 320px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.1rem;
+            margin: 10px 0;
+            transition: 0.3s;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: #000;
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 0 30px rgba(0, 255, 163, 0.6);
+            transform: translateY(-2px);
+        }
+
+        .btn-phantom {
+            background: #ab9ff2;
+            color: #000;
+        }
+
+        .wallet-status {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(0,0,0,0.4);
+            border-radius: 10px;
+            font-size: 0.9rem;
+            border: 1px dashed #444;
+        }
+
+        footer { margin-top: 60px; color: #666; }
+        
+        @media (max-width: 600px) { h1 { font-size: 3rem; } }
+    </style>
+</head>
+<body>
+
+<div id="vanta-canvas"></div>
+
+<div class="container">
+    <header>
+        <h1>BRONIN</h1>
+        <p class="subtitle">We are Bro's. We are BRONIN!</p>
+    </header>
+
+    <div class="stats-container">
+        <div class="stat-card"><div>Price</div><div class="stat-value">$0.0000</div></div>
+        <div class="stat-card"><div>FDV</div><div class="stat-value">$0</div></div>
+        <div class="stat-card"><div>Bro-lders</div><div class="stat-value">0</div></div>
+    </div>
+
+    <div class="cta-group">
+        <a href="https://pump.fun/coin/J4Db1dSx5qkhghjbzNXarMyQ2KirijJGGFb9h9jzpump" target="_blank" class="btn btn-primary">🔥 BUY ON PUMP.FUN</a>
+        
+        <button id="connectBtn" class="btn btn-phantom" onclick="handleWallet()">CONNECT PHANTOM</button>
+    </div>
+
+    <div id="walletInfo" class="wallet-status">
+        Wallet not connected.
+    </div>
+
+    <footer>
+        <p>© 2026 Bronin Token • <a href="https://x.com/Only_BRONin" style="color:white; text-decoration:none;">Follow X</a></p>
+    </footer>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.net.min.js"></script>
+
+<script>
+    // 1. Initialize Animated Background
+    VANTA.NET({
+        el: "#vanta-canvas",
+        mouseControls: true,
+        touchControls: true,
+        gyroControls: false,
+        minHeight: 200.00,
+        minWidth: 200.00,
+        scale: 1.00,
+        scaleMobile: 1.00,
+        color: 0x00ffa3,
+        backgroundColor: 0x0b0b0e,
+        points: 10.00,
+        maxDistance: 22.00,
+        spacing: 16.00
+    });
+
+    // 2. Live Phantom Logic
+    async function handleWallet() {
+        const btn = document.getElementById('connectBtn');
+        const status = document.getElementById('walletInfo');
+
+        // Check if Phantom is installed
+        const isPhantomInstalled = window.phantom?.solana?.isPhantom;
+
+        if (isPhantomInstalled) {
+            try {
+                // Try to connect
+                const resp = await window.solana.connect();
+                const pubKey = resp.publicKey.toString();
+                
+                btn.innerText = "CONNECTED";
+                btn.style.background = "#00ffa3";
+                status.innerText = `Connected: ${pubKey.substring(0, 6)}...${pubKey.substring(pubKey.length - 4)}`;
+            } catch (err) {
+                console.error("User rejected connection", err);
+                status.innerText = "Connection rejected.";
+            }
+        } else {
+            // If NOT installed, redirect to install page
+            status.innerText = "Phantom not found. Opening install page...";
+            window.open("https://phantom.app/", "_blank");
+        }
+    }
+</script>
+
+</body>
+</html>
             margin-bottom: 40px;
         }
 
@@ -238,3 +342,4 @@
 
 </body>
 </html>
+
