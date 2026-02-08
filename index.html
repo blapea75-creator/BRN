@@ -259,3 +259,27 @@
     }
 
     function addOneMillion() {
+        const input = document.getElementById('burnAmount');
+        input.value = (parseFloat(input.value) || 0) + 1000000;
+    }
+    function setMax() { document.getElementById('burnAmount').value = userBalanceValue; }
+    function updateUI(active) {
+        document.getElementById('connectBtn').style.display = active ? "none" : "block";
+        document.getElementById('logoutBtn').style.display = active ? "block" : "none";
+        document.getElementById('userBalance').style.display = active ? "block" : "none";
+        document.getElementById('copyBtn').style.display = active ? "block" : "none";
+        document.getElementById('burn-area').style.opacity = active ? "1" : "0.3";
+        document.getElementById('burn-area').style.pointerEvents = active ? "auto" : "none";
+    }
+    function handleLogout() { localStorage.removeItem('solex_wallet'); location.reload(); }
+    function copyWallet() {
+        navigator.clipboard.writeText(walletAddress);
+        document.getElementById('copyBtn').innerText = "COPIED!";
+        setTimeout(() => { document.getElementById('copyBtn').innerText = "Copy Address"; }, 2000);
+    }
+    if (walletAddress) updateUI(true);
+    updateEverything();
+    setInterval(updateEverything, 15000);
+</script>
+</body>
+</html>
