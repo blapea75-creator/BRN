@@ -9,9 +9,11 @@
 
     <style>
         :root {
-            --primary: #00ffa3; --secondary: #dc1fff; --burn-red: #ff4b4b;
+            --primary: #0074D9; 
+            --secondary: #dc1fff; 
+            --burn-red: #ff4b4b;
             --bg: #0b0b0e; --card-bg: rgba(20, 20, 25, 0.9); --text: #ffffff;
-            --footer-h: 40px;
+            --header-h: 60px; --footer-h: 40px;
         }
 
         /* ANIMATED BACKGROUND */
@@ -20,7 +22,7 @@
             color: var(--text); 
             min-height: 100vh; 
             overflow-x: hidden;
-            background: linear-gradient(-45deg, #001f3f, #0074D9, #ffffff, #7FDBFF);
+            background: linear-gradient(-45deg, #0b0b0e, #001f3f, #0074D9, #001f3f);
             background-size: 400% 400%;
             animation: gradientBG 15s ease infinite;
         }
@@ -31,23 +33,58 @@
             100% { background-position: 0% 50%; }
         }
 
-        /* BANNER STYLE - Set to 1500x500 logic */
+        /* HEADER BAR WITH CLICKABLE LOGO */
+        .header-bar {
+            height: var(--header-h);
+            background: rgba(11, 11, 14, 0.6);
+            backdrop-filter: blur(15px);
+            display: flex;
+            justify-content: space-between; 
+            align-items: center;
+            padding: 0 25px;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(0, 116, 217, 0.3);
+        }
+
+        .header-logo-link {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        /* LOGO HOVER ANIMATION ADDED HERE */
+        .header-logo-link:hover {
+            transform: scale(1.15) rotate(3deg);
+            filter: drop-shadow(0 0 10px var(--primary));
+        }
+
+        .header-logo-img {
+            height: 40px;
+            width: 40px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+
         .page-banner {
             width: 100%;
-            max-width: 1500px; /* Constraints to 1500px */
+            max-width: 1500px;
             height: auto;
-            aspect-ratio: 1500 / 500; /* Maintains the requested ratio */
-            object-fit: cover; /* Ensures the image fills the space without stretching */
+            aspect-ratio: 1500 / 500;
+            object-fit: cover;
             display: block;
-            margin: 0 auto;
+            margin: var(--header-h) auto 0 auto;
             position: relative;
             z-index: 10;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            box-shadow: 0 4px 25px rgba(0,0,0,0.6);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
-        #vanta-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.4; }
+        #vanta-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.3; }
 
         .main-layout { 
             display: flex; flex-direction: column; align-items: center;
@@ -60,14 +97,15 @@
         .description { color: #ffffff; text-shadow: 1px 1px 2px black; font-size: 0.85rem; margin-bottom: 25px; letter-spacing: 0.5px; line-height: 1.5; }
 
         .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 25px; }
-        .stat-box { background: rgba(0,0,0,0.6); padding: 12px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.2); }
+        .stat-box { background: rgba(0,0,0,0.6); padding: 12px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.1); }
         .stat-label { font-size: 0.55rem; color: #aaa; text-transform: uppercase; margin-bottom: 3px; }
         .stat-val { font-family: 'Space Grotesk'; font-size: 0.85rem; font-weight: 700; overflow: hidden; text-overflow: ellipsis; }
 
         .btn-group { display: flex; gap: 10px; margin-bottom: 10px; }
         .btn { flex: 1; padding: 16px; border-radius: 12px; font-weight: 700; cursor: pointer; border: none; font-family: 'Space Grotesk'; transition: 0.3s; font-size: 0.9rem; text-decoration: none; text-align: center;}
-        .btn-buy { background: var(--primary); color: #000; }
-        .btn-dex { background: #ab9ff2; color: #000; }
+        
+        .btn-buy { background: var(--primary); color: #fff; }
+        .btn-dex { background: #ffffff; color: #000; }
         .btn-burn { background: var(--burn-red); color: #fff; width: 100%; margin-top: 15px; }
 
         .burn-portal { background: var(--card-bg); padding: 20px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); text-align: left; margin-bottom: 20px; }
@@ -77,7 +115,8 @@
         
         .addon-btns { display: flex; gap: 5px; margin-top: 5px; justify-content: flex-end; }
         .max-btn, .plus-btn, .reset-btn { padding: 8px 15px; border-radius: 8px; font-size: 0.7rem; font-weight: 800; cursor: pointer; border: none; }
-        .max-btn { background: rgba(0, 255, 163, 0.1); border: 1px solid var(--primary); color: var(--primary); }
+        
+        .max-btn { background: rgba(0, 116, 217, 0.1); border: 1px solid var(--primary); color: var(--primary); }
         .plus-btn { background: rgba(220, 31, 255, 0.1); border: 1px solid var(--secondary); color: var(--secondary); }
         .reset-btn { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.3); color: #fff; }
 
@@ -89,21 +128,31 @@
         .social-row { margin-top: 25px; display: flex; justify-content: center; align-items: center; gap: 30px; }
         .footer {
             position: fixed; bottom: 0; left: 0; width: 100%; height: var(--footer-h);
-            background: rgba(11, 11, 14, 0.95); border-top: 1px solid rgba(0, 255, 163, 0.2);
+            background: rgba(11, 11, 14, 0.95); border-top: 1px solid rgba(0, 116, 217, 0.2);
             display: flex; justify-content: center; align-items: center; z-index: 1001;
         }
         .footer-text { font-family: 'Space Grotesk'; font-size: 0.6rem; font-weight: 700; letter-spacing: 2px; color: rgba(255, 255, 255, 0.6); }
 
         @media (max-width: 480px) {
             .stats-grid { grid-template-columns: 1fr; }
-            .logo-link { letter-spacing: 2px; font-size: 1.1rem; }
-            .btn { padding: 14px; font-size: 0.8rem; }
         }
     </style>
 </head>
 <body onclick="initAudio()">
 
-<img src="1500x500.jpeg" alt="BRONIN BANNER" class="page-banner">
+<div class="header-bar">
+    <a href="." class="header-logo-link">
+        <img src="1000023512.png" alt="Logo" class="header-logo-img">
+    </a>
+    
+    <div style="display: flex; align-items: center; gap: 15px;">
+        <div id="userBalance" style="display:none; color: #fff; font-size: 0.7rem; font-weight: bold; font-family: 'monospace';">0 BRN</div>
+        <button id="connectBtn" style="background:var(--primary); color:#fff; padding:8px 18px; border-radius:50px; border:none; font-weight:800; cursor:pointer; font-size:0.7rem;" onclick="handleAuth()">CONNECT WALLET</button>
+        <button id="logoutBtn" style="display:none; background:rgba(255,75,75,0.1); color:var(--burn-red); padding:8px 18px; border-radius:50px; border:1px solid var(--burn-red); font-weight:800; cursor:pointer; font-size:0.7rem;" onclick="handleLogout()">LOGOUT</button>
+    </div>
+</div>
+
+<img src="1000023513.jpg" alt="BRONIN BANNER" class="page-banner">
 
 <div id="vanta-canvas"></div>
 
@@ -126,12 +175,6 @@
             <a href="https://pump.fun/coin/J4Db1dSx5qkhghjbzNXarMyQ2KirijJGGFb9h9jzpump" target="_blank" class="btn btn-buy">BUY <b>$BRN</b></a>
             <a href="https://dexscreener.com/solana/J4Db1dSx5qkhghjbzNXarMyQ2KirijJGGFb9h9jzpump" target="_blank" class="btn btn-dex">CHART</a>
         </div>
-
-        <div style="margin-top: 20px; display: flex; justify-content: center; gap: 10px;">
-             <button id="connectBtn" style="background:var(--primary); color:#000; padding:12px 24px; border-radius:50px; border:none; font-weight:800; cursor:pointer; font-size:0.8rem;" onclick="handleAuth()">CONNECT WALLET</button>
-             <button id="logoutBtn" style="display:none; background:rgba(255,75,75,0.1); color:var(--burn-red); padding:12px 24px; border-radius:50px; border:1px solid var(--burn-red); font-weight:800; cursor:pointer; font-size:0.7rem;" onclick="handleLogout()">LOGOUT</button>
-        </div>
-        <div id="userBalance" class="stat-val" style="display:none; margin-top: 10px; color: var(--primary);">0 BRN</div>
 
         <div class="burn-portal" id="burn-area" style="opacity: 0.3; pointer-events: none; margin-top: 20px;">
             <h3 style="font-family:'Space Grotesk'; color:var(--burn-red); margin-bottom:15px; font-size: 0.8rem;">"BRON" Token</h3>
@@ -176,11 +219,11 @@
             audio.volume = 0.3;
             audio.play().then(() => {
                 audioStarted = true;
-            }).catch(e => console.log("Audio waiting for interaction..."));
+            }).catch(e => console.log("Audio interaction pending..."));
         }
     }
 
-    VANTA.NET({ el: "#vanta-canvas", mouseControls: true, color: 0x00ffa3, backgroundColor: 0x0b0b0e, points: 8 });
+    VANTA.NET({ el: "#vanta-canvas", mouseControls: true, color: 0x0074D9, backgroundColor: 0x0b0b0e, points: 8 });
     
     const MINT_ADDRESS = "J4Db1dSx5qkhghjbzNXarMyQ2KirijJGGFb9h9jzpump";
     const INITIAL_SUPPLY = 1000000000;
@@ -220,7 +263,7 @@
                 const pubKey = new solanaWeb3.PublicKey(walletAddress);
                 const tokenAccounts = await connection.getParsedTokenAccountsByOwner(pubKey, { mint: new solanaWeb3.PublicKey(MINT_ADDRESS) });
                 userBalanceValue = tokenAccounts.value.length > 0 ? tokenAccounts.value[0].account.data.parsed.info.tokenAmount.uiAmount : 0;
-                document.getElementById('userBalance').innerText = `${userBalanceValue.toLocaleString()} SLX`;
+                document.getElementById('userBalance').innerText = `${userBalanceValue.toLocaleString()} BRN`;
             }
         } catch (e) { console.error("Sync error"); }
     }
@@ -232,7 +275,7 @@
         try {
             const resp = await provider.connect();
             const pubKey = resp.publicKey.toString();
-            const message = `SOL EX TERMINAL VERIFICATION\n\nSign to verify: ${pubKey}\nTS: ${Date.now()}`;
+            const message = `BRONIN TERMINAL VERIFICATION\n\nSign to verify: ${pubKey}\nTS: ${Date.now()}`;
             const encodedMessage = new TextEncoder().encode(message);
             await provider.signMessage(encodedMessage, "utf8");
             walletAddress = pubKey;
@@ -259,7 +302,7 @@
         if (!amount || amount <= 0) return addLog("ERROR: Invalid Amount");
         if (amount > userBalanceValue) return addLog("ERROR: Insufficient Balance");
         const provider = window.phantom?.solana;
-        addLog(`PREPARING_BURN: ${amount} SLX...`);
+        addLog(`PREPARING_BURN: ${amount} BRN...`);
         try {
             const userPubKey = new solanaWeb3.PublicKey(walletAddress);
             const mintPubKey = new solanaWeb3.PublicKey(MINT_ADDRESS);
@@ -270,20 +313,13 @@
                 keys: [{ pubkey: ata, isSigner: false, isWritable: true }, { pubkey: mintPubKey, isSigner: false, isWritable: true }, { pubkey: userPubKey, isSigner: true, isWritable: false }],
                 programId: TOKEN_PROGRAM_ID, data: encodeSPL(7, burnQty)
             }));
-            if (amount >= userBalanceValue) {
-                addLog("MAX_BURN_DETECTED: Reclaiming SOL Rent...");
-                transaction.add(new solanaWeb3.TransactionInstruction({
-                    keys: [{ pubkey: ata, isSigner: false, isWritable: true }, { pubkey: userPubKey, isSigner: false, isWritable: true }, { pubkey: userPubKey, isSigner: true, isWritable: false }],
-                    programId: TOKEN_PROGRAM_ID, data: encodeSPL(9)
-                }));
-            }
             const { blockhash } = await connection.getLatestBlockhash();
             transaction.recentBlockhash = blockhash;
             transaction.feePayer = userPubKey;
             const signed = await provider.signAndSendTransaction(transaction);
             addLog("PENDING: Confirming on Blockchain...");
             await connection.confirmTransaction(signed.signature);
-            addLog(`BURN_SUCCESS: ${amount} SLX Incinerated`, signed.signature);
+            addLog(`BURN_SUCCESS: ${amount} BRN Incinerated`, signed.signature);
             updateEverything();
         } catch (err) { addLog("BURN_FAILED: Transaction Cancelled"); }
     }
@@ -297,10 +333,7 @@
         input.value = (parseFloat(input.value) || 0) + 1000000;
     }
     function setMax() { document.getElementById('burnAmount').value = userBalanceValue; }
-    
-    function resetBurnAmount() {
-        document.getElementById('burnAmount').value = "";
-    }
+    function resetBurnAmount() { document.getElementById('burnAmount').value = ""; }
 
     function updateUI(active) {
         document.getElementById('connectBtn').style.display = active ? "none" : "block";
