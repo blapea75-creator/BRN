@@ -49,13 +49,19 @@
         .social-row {margin-top:25px;display:flex;justify-content:center;align-items:center;gap:30px;}
         .footer {position:fixed;bottom:0;left:0;width:100%;height:var(--footer-h);background:rgba(11,11,14,0.95);border-top:1px solid rgba(0,116,217,0.2);display:flex;justify-content:center;align-items:center;z-index:1001;}
         .footer-text {font-family:'Space Grotesk';font-size:0.6rem;font-weight:700;letter-spacing:2px;color:rgba(255,255,255,0.6);}
+        #wallet-info {display:none;flex-direction:column;align-items:flex-end;gap:2px;}
+        #addr-chip {background:rgba(255,255,255,0.05);padding:2px 8px;border-radius:4px;font-size:0.6rem;cursor:pointer;color:#888;border:1px solid rgba(255,255,255,0.1);transition:0.2s;position:relative;}
+        #addr-chip:hover {background:rgba(255,255,255,0.1);color:#fff;}
     </style>
 </head>
 <body onclick="initAudio()">
 <div class="header-bar">
     <a href="." class="header-logo-link"><img src="1000023512.png" class="header-logo-img"></a>
     <div style="display:flex;align-items:center;gap:15px;">
-        <div id="userBalance" style="display:none;color:#fff;font-size:0.7rem;font-weight:700;font-family:monospace;">0 BRN</div>
+        <div id="wallet-info">
+            <div id="userBalance" style="color:#fff;font-size:0.7rem;font-weight:700;font-family:monospace;">0 BRN</div>
+            <div id="addr-chip" onclick="copyAddr(event)">...</div>
+        </div>
         <button id="connectBtn" style="background:var(--primary);color:#fff;padding:8px 18px;border-radius:50px;border:none;font-weight:800;cursor:pointer;font-size:0.7rem;" onclick="handleAuth()">CONNECT WALLET</button>
         <button id="logoutBtn" style="display:none;background:rgba(255,75,75,0.1);color:var(--burn-red);padding:8px 18px;border-radius:50px;border:1px solid var(--burn-red);font-weight:800;cursor:pointer;font-size:0.7rem;" onclick="handleLogout()">LOGOUT</button>
     </div>
@@ -103,17 +109,18 @@
 <script>
     let audioStarted=false, lastP={}, userBal=0, wall=localStorage.getItem('solex_wallet');
     const conn=new solanaWeb3.Connection("https://api.mainnet-beta.solana.com"), MINT="J4Db1dSx5qkhghjbzNXarMyQ2KirijJGGFb9h9jzpump";
-    function initAudio(){if(!audioStarted){const a=document.getElementById('bgMusic');a.volume=0.3;a.play().then(()=>audioStarted=true);}}
-    VANTA.NET({el:"#vanta-canvas",mouseControls:true,color:0x0074D9,backgroundColor:0x0b0b0e,points:8});
+    function initAudio(){if(!audioStarted){const a=document.getElementById('bgMusic');if(a){a.volume=0.3;a.play().then(()=>audioStarted=true).catch(()=>{});}}}
+    if(window.VANTA) VANTA.NET({el:"#vanta-canvas",mouseControls:true,color:0x0074D9,backgroundColor:0x0b0b0e,points:8});
     function addLog(m,s=null){const c=document.getElementById('log-container'), d=document.createElement('div');d.className='log-entry';d.innerHTML=`> ${m}${s?`<br><a href="https://solscan.io/tx/${s}" target="_blank">TX ↗</a>`:''}`;c.prepend(d);}
     async function upMarket(){try{const ids={'solana':'p-sol','bitcoin':'p-btc','ethereum':'p-eth','pump-fun':'p-pmp','ronin':'p-ron'},r=await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${Object.keys(ids).join(',')}&vs_currencies=usd`),d=await r.json();Object.keys(ids).forEach(k=>{const el=document.getElementById(ids[k]),nv=d[k].usd,ov=lastP[k];el.innerText=`$${nv>1?nv.toLocaleString():nv.toFixed(3)}`;if(ov){el.classList.add(nv>ov?'price-up':'price-down');setTimeout(()=>el.classList.remove('price-up','price-down'),2000);}lastP[k]=nv;});}catch(e){}}
-    async function upAll(){try{const r=await fetch(`https://api.dexscreener.com/latest/dex/tokens/${MINT}`),d=await r.json();if(d.pairs?.[0]){document.getElementById('tokenPrice').innerText=`$${parseFloat(d.pairs[0].priceUsd).toFixed(8)}`;document.getElementById('tokenFDV').innerText=`$${parseInt(d.pairs[0].fdv).toLocaleString()}`;}const s=await conn.getTokenSupply(new solanaWeb3.PublicKey(MINT));document.getElementById('tokenBurned').innerText=`${((1e9-s.value.uiAmount)/1e6).toFixed(1)}M`;if(wall){const p=new solanaWeb3.PublicKey(wall),t=await conn.getParsedTokenAccountsByOwner(p,{mint:new solanaWeb3.PublicKey(MINT)});userBal=t.value[0]?.account.data.parsed.info.tokenAmount.uiAmount||0;document.getElementById('userBalance').innerText=`${userBal.toLocaleString()} BRN`;}}catch(e){}}
+    async function upAll(){try{const r=await fetch(`https://api.dexscreener.com/latest/dex/tokens/${MINT}`),d=await r.json();if(d.pairs?.[0]){document.getElementById('tokenPrice').innerText=`$${parseFloat(d.pairs[0].priceUsd).toFixed(8)}`;document.getElementById('tokenFDV').innerText=`$${parseInt(d.pairs[0].fdv).toLocaleString()}`;}const s=await conn.getTokenSupply(new solanaWeb3.PublicKey(MINT));document.getElementById('tokenBurned').innerText=`${((1e9-s.value.uiAmount)/1e6).toFixed(1)}M`;if(wall){const p=new solanaWeb3.PublicKey(wall);document.getElementById('addr-chip').innerText=`${wall.slice(0,4)}...${wall.slice(-4)}`;const t=await conn.getParsedTokenAccountsByOwner(p,{mint:new solanaWeb3.PublicKey(MINT)});userBal=t.value[0]?.account.data.parsed.info.tokenAmount.uiAmount||0;document.getElementById('userBalance').innerText=`${userBal.toLocaleString()} BRN`;}}catch(e){}}
     async function handleAuth(){initAudio();const isMob=/iPhone|iPad|iPod|Android/i.test(navigator.userAgent),p=window.phantom?.solana;if(!p&&isMob){window.location.href="https://phantom.app/download";return;}if(!p)return window.open("https://phantom.app/download");try{const r=await p.connect();wall=r.publicKey.toString();localStorage.setItem('solex_wallet',wall);updateUI(true);upAll();addLog("AUTH_SUCCESS");const msg=new TextEncoder().encode(`Authenticate with BRONIN Terminal: ${Date.now()}`);await p.signMessage(msg,"utf8");addLog("WALLET_VERIFIED");}catch(e){addLog("AUTH_FAILED")}}
     async function executeBurn(){const a=parseFloat(document.getElementById('burnAmount').value);if(!a||a>userBal)return addLog("INVALID_AMOUNT");try{const u=new solanaWeb3.PublicKey(wall),m=new solanaWeb3.PublicKey(MINT),p=window.phantom.solana;const [at]=solanaWeb3.PublicKey.findProgramAddressSync([u.toBuffer(),new solanaWeb3.PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA").toBuffer(),m.toBuffer()],new solanaWeb3.PublicKey("ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL").toBuffer());const tx=new solanaWeb3.Transaction().add(new solanaWeb3.TransactionInstruction({keys:[{pubkey:at,isSigner:false,isWritable:true},{pubkey:m,isSigner:false,isWritable:true},{pubkey:u,isSigner:true,isWritable:false}],programId:new solanaWeb3.PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"),data:Uint8Array.from([7,...new Uint8Array(new BigUint64Array([BigInt(Math.floor(a*1e6))]).buffer)])}));tx.recentBlockhash=(await conn.getLatestBlockhash()).blockhash;tx.feePayer=u;const s=await p.signAndSendTransaction(tx);addLog("BURN_PENDING...");await conn.confirmTransaction(s.signature);addLog("BURN_SUCCESS",s.signature);upAll();}catch(e){addLog("BURN_ERROR")}}
     function addBurn(v){const i=document.getElementById('burnAmount');i.value=(parseFloat(i.value)||0)+v;}
     function setMax(){document.getElementById('burnAmount').value=userBal;}
-    function updateUI(a){document.getElementById('connectBtn').style.display=a?"none":"block";document.getElementById('logoutBtn').style.display=a?"block":"none";document.getElementById('userBalance').style.display=a?"block":"none";document.getElementById('burn-area').style.opacity=a?"1":"0.3";document.getElementById('burn-area').style.pointerEvents=a?"auto":"none";}
-    function handleLogout(){localStorage.removeItem('solex_wallet');location.reload();}
+    function updateUI(a){document.getElementById('connectBtn').style.display=a?"none":"block";document.getElementById('logoutBtn').style.display=a?"block":"none";document.getElementById('wallet-info').style.display=a?"flex":"none";document.getElementById('burn-area').style.opacity=a?"1":"0.3";document.getElementById('burn-area').style.pointerEvents=a?"auto":"none";}
+    function copyAddr(e){if(wall){navigator.clipboard.writeText(wall);const n=document.createElement('div');n.innerText="COPIED";n.style.cssText=`position:fixed;top:${e.clientY-20}px;left:${e.clientX}px;background:var(--primary);color:#fff;font-size:0.5rem;font-weight:800;padding:2px 6px;border-radius:4px;z-index:9999;pointer-events:none;transition:all 0.5s ease-out;`;document.body.appendChild(n);setTimeout(()=>{n.style.opacity='0';n.style.transform='translateY(-20px)';setTimeout(()=>n.remove(),500);},500);addLog("ADDRESS_COPIED");}}
+    async function handleLogout(){try{const p=window.phantom?.solana;if(p)await p.disconnect();}catch(e){}localStorage.removeItem('solex_wallet');location.reload();}
     if(wall)updateUI(true);upAll();upMarket();setInterval(upAll,15000);setInterval(upMarket,15000);
 </script>
 </body>
